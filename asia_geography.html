@@ -1,0 +1,2250 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>АЗИЯ — Географски Атлас</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Mono:wght@400;700&family=Noto+Serif:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1208;
+  --paper: #f5f0e8;
+  --aged: #e8dfc8;
+  --rust: #c8471a;
+  --gold: #d4a017;
+  --teal: #1a7a6e;
+  --deep: #0d3d56;
+  --mist: #8fb4c8;
+  --accent: #e85d20;
+  --light-rust: rgba(200,71,26,0.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Noto Serif', serif;
+  overflow-x: hidden;
+}
+
+/* ===== NOISE TEXTURE ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+/* ===== NAVIGATION ===== */
+#main-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--ink);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  border-bottom: 2px solid var(--gold);
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--aged);
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 0.4rem 0.9rem;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.nav-links a:hover { color: var(--gold); background: rgba(212,160,23,0.1); }
+
+.nav-progress {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  background: var(--rust);
+  transition: width 0.1s;
+  width: 0%;
+}
+
+/* ===== HERO ===== */
+#hero {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.hero-map-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Cpath d='M50,250 Q100,150 200,120 Q280,100 350,80 Q420,60 500,90 Q600,120 650,100 Q700,80 750,110 L760,200 Q720,220 680,210 Q630,200 590,230 Q550,260 520,300 Q490,340 450,360 Q400,380 350,370 Q300,360 260,340 Q210,315 170,330 Q130,345 100,320 Q70,295 50,250Z' fill='%23d4a017' stroke='%23d4a017' stroke-width='1'/%3E%3Ccircle cx='580' cy='180' r='4' fill='%23c8471a'/%3E%3Ccircle cx='390' cy='200' r='4' fill='%23c8471a'/%3E%3Ccircle cx='470' cy='320' r='4' fill='%23c8471a'/%3E%3Ccircle cx='250' cy='280' r='4' fill='%23c8471a'/%3E%3Ccircle cx='680' cy='150' r='4' fill='%23c8471a'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 90%;
+}
+
+.hero-content {
+  text-align: center;
+  z-index: 2;
+  padding: 2rem;
+}
+
+.hero-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.4em;
+  color: var(--rust);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(4rem, 12vw, 9rem);
+  font-weight: 900;
+  color: var(--paper);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+
+.hero-title span {
+  color: var(--gold);
+  font-style: italic;
+}
+
+.hero-sub {
+  font-family: 'Noto Serif', serif;
+  font-size: 1.1rem;
+  color: var(--mist);
+  max-width: 520px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+  font-weight: 300;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+}
+
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+.stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--mist);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--mist);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+}
+.scroll-arrow {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(var(--mist), transparent);
+  animation: scrollPulse 2s infinite;
+}
+
+/* ===== SECTION BASE ===== */
+.section {
+  padding: 6rem 0;
+  position: relative;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.section-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--light-rust);
+  line-height: 1;
+  flex-shrink: 0;
+  letter-spacing: -0.05em;
+}
+
+.section-title-block h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.section-title-block .subtitle {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: var(--rust);
+  text-transform: uppercase;
+}
+
+/* ===== DARK SECTION ===== */
+.section-dark {
+  background: var(--ink);
+  color: var(--paper);
+}
+.section-dark .section-num { color: rgba(212,160,23,0.15); }
+.section-dark h2 { color: var(--paper); }
+.section-dark .subtitle { color: var(--gold); }
+.section-dark p { color: rgba(245,240,232,0.8); }
+
+/* ===== TEXT BLOCKS ===== */
+.prose {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #2a1f10;
+  max-width: 720px;
+}
+.section-dark .prose { color: rgba(245,240,232,0.82); }
+
+.prose p { margin-bottom: 1.2rem; }
+
+.prose strong { color: var(--rust); font-weight: 600; }
+.section-dark .prose strong { color: var(--gold); }
+
+/* ===== CALLOUT / KEY FACT ===== */
+.callout {
+  background: var(--ink);
+  color: var(--paper);
+  border-left: 4px solid var(--gold);
+  padding: 1.2rem 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+}
+.section-dark .callout {
+  background: rgba(212,160,23,0.12);
+  border-color: var(--gold);
+}
+
+/* ===== QUESTION CARD ===== */
+.question-card {
+  border: 1px solid var(--rust);
+  padding: 1.5rem;
+  margin: 2.5rem 0;
+  position: relative;
+  background: var(--light-rust);
+}
+.question-card::before {
+  content: '?';
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--rust);
+  opacity: 0.2;
+  position: absolute;
+  right: 1rem;
+  top: 0.5rem;
+  line-height: 1;
+}
+.question-card .q-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--rust);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.question-card p { font-style: italic; font-size: 1rem; line-height: 1.6; }
+.section-dark .question-card {
+  border-color: var(--gold);
+  background: rgba(212,160,23,0.08);
+}
+.section-dark .question-card .q-label { color: var(--gold); }
+.section-dark .question-card::before { color: var(--gold); }
+
+/* ===== TABS ===== */
+.tabs {
+  margin-top: 2rem;
+}
+.tab-nav {
+  display: flex;
+  border-bottom: 2px solid var(--aged);
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.section-dark .tab-nav { border-color: rgba(255,255,255,0.15); }
+
+.tab-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.tab-btn.active { color: var(--rust); border-color: var(--rust); }
+.section-dark .tab-btn { color: rgba(255,255,255,0.4); }
+.section-dark .tab-btn.active { color: var(--gold); border-color: var(--gold); }
+
+.tab-panel { display: none; animation: fadeIn 0.3s; }
+.tab-panel.active { display: block; }
+
+/* ===== DATA TABLE ===== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 1.5rem 0;
+}
+.data-table th {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  background: var(--ink);
+  color: var(--gold);
+}
+.data-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--aged);
+}
+.data-table tr:hover td { background: var(--light-rust); }
+.section-dark .data-table td { border-color: rgba(255,255,255,0.1); }
+.section-dark .data-table tr:hover td { background: rgba(212,160,23,0.08); }
+
+/* ===== GRID CARDS ===== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.card {
+  border: 1px solid var(--aged);
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.25s;
+  cursor: default;
+}
+.card:hover {
+  border-color: var(--rust);
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0 var(--rust);
+}
+.section-dark .card { border-color: rgba(255,255,255,0.15); }
+.section-dark .card:hover { border-color: var(--gold); box-shadow: 4px 4px 0 var(--gold); }
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+}
+.card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.card p { font-size: 0.88rem; line-height: 1.65; color: #555; }
+.section-dark .card p { color: rgba(245,240,232,0.7); }
+
+/* ===== CLIMATE CHART (SVG) ===== */
+.chart-wrapper {
+  background: var(--aged);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  overflow-x: auto;
+}
+.section-dark .chart-wrapper { background: rgba(255,255,255,0.05); }
+
+/* ===== FLASH CARDS ===== */
+.flashcard-section {
+  margin: 3rem 0;
+}
+.flashcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.flashcard {
+  height: 160px;
+  perspective: 800px;
+  cursor: pointer;
+}
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4,0.2,0.2,1);
+}
+.flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid var(--rust);
+}
+.flashcard-front {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+}
+.flashcard-back {
+  background: var(--rust);
+  color: white;
+  transform: rotateY(180deg);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.section-dark .flashcard-front { background: rgba(255,255,255,0.08); border-color: var(--gold); }
+.section-dark .flashcard-back { background: var(--teal); border-color: var(--gold); }
+
+.flashcard-hint {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--mist);
+  text-align: center;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+/* ===== QUIZ ===== */
+#quiz-section {
+  background: var(--deep);
+  color: var(--paper);
+}
+
+.quiz-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.quiz-progress-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  margin-bottom: 2rem;
+  position: relative;
+}
+.quiz-progress-fill {
+  height: 100%;
+  background: var(--gold);
+  transition: width 0.4s;
+}
+
+.question-block { display: none; }
+.question-block.active { display: block; }
+
+.question-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  color: var(--paper);
+}
+
+.question-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.answer-options {
+  display: grid;
+  gap: 0.7rem;
+  margin-bottom: 1.5rem;
+}
+
+.answer-btn {
+  padding: 0.9rem 1.2rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: var(--paper);
+  cursor: pointer;
+  font-family: 'Noto Serif', serif;
+  font-size: 0.95rem;
+  text-align: left;
+  transition: all 0.2s;
+}
+.answer-btn:hover { border-color: var(--gold); background: rgba(212,160,23,0.1); }
+.answer-btn.correct { background: rgba(26,122,110,0.4); border-color: var(--teal); }
+.answer-btn.wrong { background: rgba(200,71,26,0.3); border-color: var(--rust); }
+
+.answer-explain {
+  background: rgba(212,160,23,0.1);
+  border-left: 3px solid var(--gold);
+  padding: 1rem 1.2rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  display: none;
+  color: var(--aged);
+}
+.answer-explain.show { display: block; }
+
+.quiz-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.8rem;
+  border: 2px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+.quiz-btn:hover { background: var(--gold); color: var(--ink); }
+
+.quiz-result {
+  text-align: center;
+  display: none;
+  padding: 3rem 0;
+}
+.result-score {
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+.result-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--mist);
+  text-transform: uppercase;
+  margin: 0.5rem 0 1.5rem;
+}
+.result-msg {
+  font-size: 1.1rem;
+  color: var(--aged);
+  max-width: 400px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+/* ===== COUNTRY CARDS ===== */
+.country-section {
+  padding: 4rem 0;
+  border-top: 1px solid var(--aged);
+}
+.section-dark .country-section { border-color: rgba(255,255,255,0.1); }
+
+.country-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.country-flag-big {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+.country-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+}
+.country-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--rust);
+  text-transform: uppercase;
+}
+.section-dark .country-tag { color: var(--gold); }
+
+.country-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.fact-item {
+  padding: 1rem;
+  background: var(--aged);
+  border-left: 3px solid var(--rust);
+}
+.section-dark .fact-item { background: rgba(255,255,255,0.06); border-color: var(--gold); }
+.fact-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 0.3rem;
+}
+.section-dark .fact-label { color: rgba(255,255,255,0.4); }
+.fact-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.section-dark .fact-val { color: var(--paper); }
+
+/* ===== CLIMATE CHART (canvas-style SVG) ===== */
+.climate-chart {
+  width: 100%;
+  max-width: 680px;
+  margin: 1.5rem 0;
+}
+
+/* ===== ACCORDION ===== */
+.accordion { margin: 2rem 0; }
+.accordion-item { border-bottom: 1px solid var(--aged); }
+.section-dark .accordion-item { border-color: rgba(255,255,255,0.12); }
+.accordion-btn {
+  width: 100%;
+  padding: 1.1rem 0;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--ink);
+}
+.section-dark .accordion-btn { color: var(--paper); }
+.accordion-btn .acc-icon {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.2rem;
+  color: var(--rust);
+  transition: transform 0.3s;
+}
+.section-dark .accordion-btn .acc-icon { color: var(--gold); }
+.accordion-btn.open .acc-icon { transform: rotate(45deg); }
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.accordion-content-inner {
+  padding: 0 0 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #444;
+}
+.section-dark .accordion-content-inner { color: rgba(245,240,232,0.75); }
+
+/* ===== OLYMPIC CORNER ===== */
+.olympic-corner {
+  background: linear-gradient(135deg, var(--deep), #0a2840);
+  color: var(--paper);
+  border: 2px solid var(--gold);
+  padding: 2rem;
+  margin: 2.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+.olympic-corner::before {
+  content: '★';
+  position: absolute;
+  right: -0.5rem;
+  top: -1rem;
+  font-size: 8rem;
+  color: rgba(212,160,23,0.06);
+  line-height: 1;
+}
+.olympic-corner .oc-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.olympic-corner h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+.olympic-corner ul {
+  list-style: none;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+.olympic-corner ul li::before {
+  content: '→ ';
+  color: var(--gold);
+}
+
+/* ===== HYDROGRAPH ===== */
+.hydro-wrapper {
+  background: rgba(13,61,86,0.08);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border: 1px solid var(--mist);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--ink);
+  color: var(--aged);
+  text-align: center;
+  padding: 3rem 2rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+}
+footer .footer-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+footer p { color: rgba(232,223,200,0.5); }
+
+/* ===== SEPARATOR ===== */
+.sep {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 3rem 0;
+}
+.sep-line { flex: 1; height: 1px; background: var(--aged); }
+.section-dark .sep-line { background: rgba(255,255,255,0.12); }
+.sep-sym {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--rust);
+  font-style: italic;
+}
+.section-dark .sep-sym { color: var(--gold); }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s, transform 0.7s;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== INTERACTIVE MAP HIGHLIGHT ===== */
+.region-map {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+.region-item {
+  padding: 0.8rem;
+  background: var(--aged);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.section-dark .region-item { background: rgba(255,255,255,0.06); }
+.region-item:hover, .region-item.active {
+  background: var(--ink);
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.region-item .ri-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.region-item .ri-km {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.region-info-box {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1.2rem 1.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  display: none;
+}
+.region-info-box.show { display: block; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--aged); }
+::-webkit-scrollbar-thumb { background: var(--rust); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a class="nav-logo" href="#hero">АЗИЯ</a>
+  <ul class="nav-links">
+    <li><a href="#nature">Природа</a></li>
+    <li><a href="#climate">Климат</a></li>
+    <li><a href="#waters">Води</a></li>
+    <li><a href="#zones">Природни зони</a></li>
+    <li><a href="#economy">Икономика</a></li>
+    <li><a href="#countries">Страни</a></li>
+    <li><a href="#quiz-section">Тест</a></li>
+  </ul>
+  <div class="nav-progress" id="navProgress"></div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-map-bg"></div>
+  <div class="hero-content">
+    <div class="hero-label">Географски атлас</div>
+    <h1 class="hero-title">А<span>з</span>ия</h1>
+    <p class="hero-sub">Най-голямата и най-населената част на света — от арктическите тундри до екваториалните джунгли, от Мъртво море до Хималаите.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">44.6M</div><div class="stat-label">km² площ</div></div>
+      <div class="stat"><div class="stat-num">4.7B</div><div class="stat-label">население</div></div>
+      <div class="stat"><div class="stat-num">49</div><div class="stat-label">държави</div></div>
+      <div class="stat"><div class="stat-num">8848м</div><div class="stat-label">Еверест</div></div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>ПРЕВЪРТЕТЕ</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ПРИРОДА -->
+<section class="section" id="nature">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">01</div>
+      <div class="section-title-block">
+        <div class="subtitle">Природна география</div>
+        <h2>Географско положение,<br>История и Релеф</h2>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs reveal">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'geo-pos')">Географско положение</button>
+        <button class="tab-btn" onclick="switchTab(this,'history')">История</button>
+        <button class="tab-btn" onclick="switchTab(this,'relief')">Релеф и полезни изкопаеми</button>
+      </div>
+
+      <!-- ГЕО ПОЛОЖЕНИЕ -->
+      <div class="tab-panel active" id="geo-pos">
+        <div class="prose">
+          <p>Азия е <strong>най-голямата</strong> по площ (44.6 млн. km²) и <strong>най-населената</strong> (около 4.7 млрд. души) част на света. Тя заема около <strong>1/3 от земната суша</strong> и е родина на над 60% от световното население.</p>
+          <p>Континентът граничи на запад с <strong>Европа</strong> (по Уралските планини, река Урал, Каспийско море, Кавказ, Черно и Мраморно море, протоците Босфор и Дарданели) и с <strong>Африка</strong> (по Суецкия канал). На север се измива от <strong>Северния ледовит океан</strong>, на изток — от <strong>Тихия океан</strong>, а на юг — от <strong>Индийския океан</strong>.</p>
+        </div>
+
+        <div class="callout">„Азия е люлката на цивилизацията — тук се раждат първите писмености, религии и държави."</div>
+
+        <div class="prose">
+          <p><strong>Крайни точки:</strong></p>
+        </div>
+
+        <div class="region-map" id="extreme-points">
+          <div class="region-item" onclick="showRegionInfo('north')">
+            <div class="ri-name">Север</div>
+            <div class="ri-km">нос Чeлюскин</div>
+          </div>
+          <div class="region-item" onclick="showRegionInfo('south')">
+            <div class="ri-name">Юг</div>
+            <div class="ri-km">нос Пиай</div>
+          </div>
+          <div class="region-item" onclick="showRegionInfo('west')">
+            <div class="ri-name">Запад</div>
+            <div class="ri-km">нос Баба</div>
+          </div>
+          <div class="region-item" onclick="showRegionInfo('east')">
+            <div class="ri-name">Изток</div>
+            <div class="ri-km">нос Дежньов</div>
+          </div>
+        </div>
+        <div class="region-info-box" id="region-info"></div>
+
+        <div class="prose">
+          <p>Наименованието „Азия" идва от асирийската дума <em>„асу"</em> — „изток, изгрев". Континентът граничи на <strong>запад с Европа</strong> по Уралските планини, р. Урал, Каспийско море, Кавказ, <strong>протока Босфор</strong>, Мраморно море и <strong>протока Дарданели</strong>. На <strong>югозапад</strong> — с Африка чрез <strong>Суецкия канал</strong>. На <strong>североизток</strong> Беринговият проток я отделя от Северна Америка.</p>
+          <p>Азия е <strong>единственият континент</strong>, в който се пресичат всички климатични пояси — от екваториалния до полярния. Тя е и континентът на рекордите: тук са най-високата точка (Еверест — 8848 м), най-дълбоката депресия на сушата (Мъртво море — −430 м), полюсите на студа на Северното полукълбо (Оймякон − 71,2°C) и рекордните валежи (Черапунджи — над 11 700 мм/год.).</p>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Помисли</div>
+          <p>Защо Азия е разделена на пет физикогеографски части и какво значение има Уралската граница с Европа? Кои са аргументите „за" и „против" третирането на Евразия като отделен континент?</p>
+        </div>
+        <div class="prose">
+          <p><strong>Обяснение:</strong> Уралската граница е конвенционална — не природна бариера, а историческа традиция от XVIII в. (Василий Татишчев). Физически Европа и Азия са един континент Евразия. Разделянето е исторически, цивилизационно и научнопрактически обосновано, но не е абсолютно. На олимпиади трябва да познавате и двете гледища!</p>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Задача от учебника (ур. 34)</div>
+          <p>Сравнете географското положение на Азия и Северна Америка. Представете приликите и разликите чрез схема. Кои са крайните точки на Азия и на кои географски ширини се намират?</p>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Нов въпрос</div>
+          <p>Босфорът свързва Черно и Мраморно море. Коя страна го контролира и защо това е от стратегическо значение за България, Русия и Украйна?</p>
+        </div>
+        <div class="prose">
+          <p><strong>Обяснение:</strong> Турция контролира Босфора по силата на <strong>Монтрьоската конвенция (1936)</strong>. Той е <strong>единственият морски изход</strong> от Черно море към световния океан. За България — износ на стоки; за Русия — военноморски достъп; за Украйна — зърнен износ. Затова геополитическото значение на Турция е огромно.</p>
+        </div>
+      </div>
+
+      <!-- ИСТОРИЯ -->
+      <div class="tab-panel" id="history">
+        <div class="prose">
+          <p>Азия е <strong>люлката на световната цивилизация</strong>. Тук възникват първите писмени системи (шумерски клинопис, ок. 3200 г. пр.н.е.), първите градове-държави (Месопотамия), световните религии (индуизъм, будизъм, ислям, юдаизъм, християнство) и развитите икономики на древността.</p>
+
+          <p>В <strong>Древността</strong> мощни цивилизации се развиват в долините на р. Тигър и Ефрат (Месопотамия), р. Инд (Мохенджо-Даро), р. Жълта (Хуанхъ). Ахеменидска Персия е първата „световна" империя (VI–IV в. пр.н.е.).</p>
+
+          <p>През <strong>Средновековието</strong> Монголската империя (XIII в.) достига максималното си разпростиране — над 24 млн. km², по-голяма от всяка предишна. Арабската експанзия разпространява исляма от Испания до Индия.</p>
+
+          <p>В <strong>Новото и най-новото време</strong> Европейският колониализъм (Британска Индия, Холандска Индия, Французска Индокитая) преформатира Азия. Деколонизацията след 1945 г. поражда десетки нови държави.</p>
+        </div>
+
+        <div class="olympic-corner">
+          <div class="oc-label">⭐ Олимпийско ниво</div>
+          <h4>Ключови исторически процеси в Азия</h4>
+          <ul>
+            <li>Хидравличната хипотеза (Wittfogel): Ориенталският деспотизъм е свързан с управлението на напоителни системи в речни долини</li>
+            <li>Пътят на коприната: свързва Китай с Европа — транспортира не само стоки, но и идеи, технологии, болести (Черната смърт)</li>
+            <li>Монсунните цивилизации: риценото земеделие е организиращ принцип за Южна и Югоизточна Азия</li>
+            <li>Азиатски тигри: Япония, Ю.Корея, Тайван, Сингапур — моделът на „догоняващото развитие"</li>
+          </ul>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Анализ</div>
+          <p>Защо именно речните долини стават центрове на ранните цивилизации в Азия? Каква е ролята на климата и водите в това?</p>
+        </div>
+        <div class="prose">
+          <p><strong>Обяснение:</strong> Речните наноси осигуряват плодородна почва; редовните наводнения (Нил, Тигър-Ефрат, Инд, Хуанхъ) оставят хранителни утайки. Нужда от координация при напояване → социална организация → държавност. Предвидимото земеделие → излишъци → специализация → писменост, занаяти, търговия.</p>
+        </div>
+      </div>
+
+      <!-- РЕЛЕФ -->
+      <div class="tab-panel" id="relief">
+        <div class="prose">
+          <p>Релефът на Азия е изключително <strong>разнообразен и контрастен</strong>. Средната височина (950 м) е най-голяма сред всички континенти. Тук се намират <strong>най-високата точка на Земята</strong> (Еверест, 8849 м) и <strong>най-ниската суша</strong> (бряг на Мъртво море, −430 м).</p>
+        </div>
+
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">🏔️</div>
+            <h3>Хималаите</h3>
+            <p>Най-висока планинска система на Земята. Протяжност ~2500 км. Формирана при колизията на Индийската и Евразийската плочи. Продължава да се издига с ~5 мм/год.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🗻</div>
+            <h3>Тибетско плато</h3>
+            <p>„Покривът на света" — средна височина 4500 м. Площ ~2.5 млн. km². Формирано при същата тектонска колизия. Тук извират Яндзъ, Хуанхъ, Меконг, Инд, Ганг, Брамапутра.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🌊</div>
+            <h3>Западносибирска низина</h3>
+            <p>Една от най-големите низини в света (~2.7 млн. km²). Заета от блата (вас). Ключова за добива на нефт и газ (Западносибирски нефтогазов басейн).</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏝️</div>
+            <h3>Острови и полуострови</h3>
+            <p>Арабски, Индостански, Индокитайски п-ов; Японски острови, Филипини, Малайски архипелаг. Островите — следствие от субдукция и вулканизъм.</p>
+          </div>
+        </div>
+
+        <div class="sep"><div class="sep-line"></div><div class="sep-sym">✦</div><div class="sep-line"></div></div>
+
+        <div class="prose"><p><strong>Полезни изкопаеми:</strong> Азия е изключително богата на минерални ресурси.</p></div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ресурс</th>
+              <th>Ключови региони</th>
+              <th>Значение</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Нефт и газ</td><td>Персийски залив, Западен Сибир, Каспий</td><td>~60% от световните резерви</td></tr>
+            <tr><td>Въглища</td><td>Китай, Индия, Казахстан</td><td>Китай — №1 производител в света</td></tr>
+            <tr><td>Желязна руда</td><td>Китай, Индия, Казахстан</td><td>Основа за стоманодобивната промишленост</td></tr>
+            <tr><td>Калай</td><td>Малайзия, Индонезия, Тайланд</td><td>Историческо „калаено" богатство</td></tr>
+            <tr><td>Редки земни метали</td><td>Китай (>70% от добива)</td><td>Критичен ресурс за Hi-Tech</td></tr>
+            <tr><td>Диаманти, злато</td><td>Русия (Сибир), Индия</td><td>Исторически — Гондвана</td></tr>
+          </tbody>
+        </table>
+
+        <div class="olympic-corner">
+          <div class="oc-label">⭐ Олимпийско ниво</div>
+          <h4>Тектоника и релеф — причинно-следствени връзки</h4>
+          <ul>
+            <li>Индийската плоча се е откъснала от Гондвана преди ~100 млн. год. и се движи на север с ~5 см/год. — сблъсъкът с Евразийската плоча преди ~50 млн. год. изгражда Хималаите</li>
+            <li>„Огненият пръстен" обхваща Японските острови, Филипините, Индонезия — субдукция → вулканизъм и земетресения</li>
+            <li>Рифтовата зона на Байкал обяснява защо езерото е най-дълбокото в света (1642 м)</li>
+            <li>Нефтът в Персийския залив — морски седименти от Тетис (затворено море)</li>
+            <li>Средната надморска височина на Азия е 960 м — най-висока сред всички континенти (без Антарктида)</li>
+          </ul>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Задача от учебника (ур. 36–37)</div>
+          <p>Опишете различни форми от повърхнината на Азия като доказателство, че релефът е разнообразен. Намерете съответствието между формите на релефа и характерните белези: Месопотамска низина, Инда-Гангска низина, Средносибирско плато, Хималаи, Депресията на Мъртво море.</p>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Нов въпрос</div>
+          <p>Гоби е пустиня, въпреки че се намира близо до Тихия океан. Как планините обясняват това привидно противоречие?</p>
+        </div>
+        <div class="prose">
+          <p><strong>Обяснение:</strong> Планините Тяншан, Хиндукуш и Монголският масив блокират влажния океански въздух — създават <strong>„дъждовна сянка"</strong>. Наветреният склон получава валежи; завятерният остава сух. Гоби получава под 200 мм/год. въпреки географската ширина. Същото важи за Тибет — блокиран от Хималаите.</p>
+        </div>
+      </div>
+    </div><!-- /tabs -->
+  </div>
+</section>
+
+<!-- КЛИМАТ -->
+<section class="section section-dark" id="climate">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">02</div>
+      <div class="section-title-block">
+        <div class="subtitle">Климатология</div>
+        <h2>Климат и климатични пояси</h2>
+      </div>
+    </div>
+
+    <div class="prose reveal">
+      <p>Азия е <strong>единственият континент</strong>, в който са представени всички климатични пояси — от арктическия на север до екваториалния на юг. Ключова роля играе <strong>монсунната циркулация</strong>, свойствена за Южна, Югоизточна и Източна Азия.</p>
+      <p><strong>Монсунът</strong> е сезонна смяна на вятъра, причинена от температурната разлика между океана и сушата. <strong>Думата „мусон" идва от арабски</strong> и означава „сезон". През лятото сушата се нагрява по-бързо → ниско налягане → влажни ветрове от океана (летен мусон, валежи). През зимата сушата се охлажда по-бързо → високо налягане → сухи ветрове към океана (зимен мусон).</p>
+      <p>Основните климатообразуващи фактори в Азия са: <strong>географска ширина</strong> (всички пояси), <strong>въздушни маси</strong> (всички типове), <strong>влияние на океаните</strong> (Тих, Индийски, Северен ледовит), <strong>релефа</strong> (планинска бариера → континентален климат на вътрешността).</p>
+    </div>
+
+    <div style="background:rgba(26,122,110,0.12);border:1px solid var(--teal);padding:1.5rem;margin:2rem 0;">
+      <div style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.3em;color:var(--teal);text-transform:uppercase;margin-bottom:0.8rem;">🌍 Географска мозайка от учебника</div>
+      <p style="font-size:0.9rem;line-height:1.7;color:rgba(245,240,232,0.85);">По време на летния мусон в Индия за три месеца падат 75% от годишните валежи. ● Най-много мълнии падат на остров Ява — над 200 електрични бури/год. ● Благодарение на сух и хладен въздух в Тибет духът може да се съхрани 60 години. ● Оймякон — полюс на студа — е и най-гъсто населеното място с такива температури.</p>
+    </div>
+
+    <div class="question-card reveal">
+      <div class="q-label">Задача от учебника (ур. 39)</div>
+      <p>Опишете промените в температурата на въздуха по територията на континента. Обяснете факторите, които влияят на елементите на климата на Азия. С помощта на схема начертайте образуването на мусоните — включете информация за налягането и ветровете през зимата и лятото.</p>
+    </div>
+
+    <div class="question-card reveal">
+      <div class="q-label">Помисли</div>
+      <p>Защо монсунните дъждове са животоважни за Южна и Югоизточна Азия? Какви последствия имат провалите на монсуна?</p>
+    </div>
+    <div class="prose reveal">
+      <p><strong>Обяснение:</strong> Монсунните валежи осигуряват ~80% от годишните валежи в Индия, Бангладеш, Бирма. Провалите (слаб монсун) водят до суши, неколония и глад. Прекалено силните монсуни причиняват наводнения. Монсунът е „климатичният пулс" на Азия — мусоните могат да имат отрицателни и положителни ефекти. По Южна и Югоизточна Азия в реките не се прехранват 150 млн. семейства.</p>
+    </div>
+
+    <div class="question-card reveal">
+      <div class="q-label">Нов въпрос</div>
+      <p>Кои са трите основни климатообразуващи фактора в Азия и как всеки от тях влияе върху климата? Дайте конкретен пример за всеки.</p>
+    </div>
+    <div class="prose reveal">
+      <p><strong>Обяснение:</strong> <strong>1. Географска ширина</strong> — определя количеството слънчева радиация → севернее = по-студено (Оймякон −71°C) vs. тропически (Арабски п-ов +54°C). <strong>2. Въздушни маси</strong> — екваториални (топли, влажни), тропически (горещи, сухи), умерени (сезонни), полярни (студени). <strong>3. Релеф</strong> — Хималаите блокират летния мусон → Тибет е сух, а подножието (Черапунджи) е рекордно дъждовно.</p>
+    </div>
+
+    <div class="tabs reveal">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'belt-arctic')">Арктичен / Субарктичен</button>
+        <button class="tab-btn" onclick="switchTab(this,'belt-temp')">Умерен</button>
+        <button class="tab-btn" onclick="switchTab(this,'belt-sub')">Субтропичен</button>
+        <button class="tab-btn" onclick="switchTab(this,'belt-trop')">Тропичен</button>
+        <button class="tab-btn" onclick="switchTab(this,'belt-eq')">Субекв. / Екв.</button>
+      </div>
+
+      <div class="tab-panel active" id="belt-arctic">
+        <div class="prose">
+          <p><strong>Арктичен пояс</strong> — арктически острови (Нова Земля, Земя на Франц Йосиф). Вечен лед, t° лятно — около 0°C. <strong>Субарктичен (суб-полярен)</strong> — северна Сибирия. Тук се намират полюсите на студа на Северното полукълбо: Верхоянск и Оймякон (−67.7°C рекорд). Вечна замръзналост (permafrost) достига дълбочина до 1500 м.</p>
+          <p>Вечната замръзналост е от огромно инженерно значение — сградите и тръбопроводите трябва да бъдат строени на пилоти, за да не се наклонят при размразяване на горния слой почва.</p>
+        </div>
+        <div id="hydro-verkhoyansk">
+          <div class="hydro-wrapper">
+            <div class="oc-label" style="font-family:'Space Mono';font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">Хидроклиматограма: Верхоянск (субарктичен)</div>
+            <svg viewBox="0 0 600 280" class="climate-chart">
+              <!-- axes -->
+              <line x1="60" y1="220" x2="580" y2="220" stroke="#aaa" stroke-width="1"/>
+              <line x1="60" y1="20" x2="60" y2="220" stroke="#aaa" stroke-width="1"/>
+              <!-- temp line (left axis) -->
+              <polyline points="60,215 100,213 140,200 180,170 220,120 260,100 300,98 340,105 380,135 420,175 460,205 500,213 540,215" 
+                fill="none" stroke="#e85d20" stroke-width="2.5"/>
+              <!-- month labels -->
+              <text x="80" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Я</text>
+              <text x="120" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Ф</text>
+              <text x="160" y="240" font-family="Space Mono" font-size="9" fill="#aaa">М</text>
+              <text x="200" y="240" font-family="Space Mono" font-size="9" fill="#aaa">А</text>
+              <text x="240" y="240" font-family="Space Mono" font-size="9" fill="#aaa">М</text>
+              <text x="280" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Ю</text>
+              <text x="320" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Ю</text>
+              <text x="360" y="240" font-family="Space Mono" font-size="9" fill="#aaa">А</text>
+              <text x="400" y="240" font-family="Space Mono" font-size="9" fill="#aaa">С</text>
+              <text x="440" y="240" font-family="Space Mono" font-size="9" fill="#aaa">О</text>
+              <text x="480" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Н</text>
+              <text x="520" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Д</text>
+              <!-- rain bars -->
+              <rect x="70" y="212" width="18" height="8" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="110" y="211" width="18" height="9" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="150" y="210" width="18" height="10" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="190" y="207" width="18" height="13" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="230" y="200" width="18" height="20" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="270" y="193" width="18" height="27" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="310" y="190" width="18" height="30" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="350" y="193" width="18" height="27" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="390" y="203" width="18" height="17" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="430" y="209" width="18" height="11" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="470" y="211" width="18" height="9" fill="#1a7a6e" opacity="0.7"/>
+              <rect x="510" y="212" width="18" height="8" fill="#1a7a6e" opacity="0.7"/>
+              <!-- legend -->
+              <rect x="65" y="258" width="18" height="8" fill="#1a7a6e" opacity="0.8"/>
+              <text x="90" y="267" font-family="Space Mono" font-size="9" fill="#aaa">Валежи (мм)</text>
+              <line x1="200" y1="262" x2="218" y2="262" stroke="#e85d20" stroke-width="2.5"/>
+              <text x="225" y="267" font-family="Space Mono" font-size="9" fill="#aaa">Температура (°C)</text>
+              <text x="60" y="18" font-family="Space Mono" font-size="8" fill="#aaa">+20°</text>
+              <text x="60" y="100" font-family="Space Mono" font-size="8" fill="#aaa">−40°</text>
+              <text x="60" y="220" font-family="Space Mono" font-size="8" fill="#aaa">−60°</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="belt-temp">
+        <div class="prose">
+          <p><strong>Умерен пояс</strong> — обхваща голяма част от Сибирия и Централна Азия. Тук климатите варират от <strong>умерено-континентален до рязко континентален</strong> (Вътрешна Монголия, Гоби) и <strong>умерено-мусонен</strong> (Корейски п-ов, Япония, СИ Китай). Амплитудата на температурите е огромна — до 100°C в Централна Азия.</p>
+          <p>Монголия и пустинята Гоби имат изключително <strong>континентален</strong> климат — лятото е горещо (+40°C), зимата — студена (−40°C), малко валежи (<200 мм/год). Това се дължи на изолацията от океаните чрез планини.</p>
+        </div>
+        <div class="olympic-corner">
+          <div class="oc-label">⭐ Олимпийско ниво</div>
+          <h4>Континенталност на климата — как се измерва?</h4>
+          <ul>
+            <li>Индекс на Горчински: K = 1.7·A/sin(φ+10°) − 20,4, където A е годишната амплитуда</li>
+            <li>Верхоянск: K ≈ 100 (максимална континенталност)</li>
+            <li>Причини: отдалеченост от океана + ограждащи планини + антициклонална зима</li>
+            <li>Сибирският антициклон (Азиатски максимум) — зимна барична система над Централна Азия</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="belt-sub">
+        <div class="prose">
+          <p><strong>Субтропичен пояс</strong> — включва Средиземноморски (Турция, Израел, Ливан — сухо, горещо лято, влажна зима), <strong>Субтропично-мусонен</strong> (ЮИ Китай — горещо влажно лято) и <strong>Субтропично-континентален</strong> (Иран, Афганистан, Арабски п-ов — пустинен).</p>
+          <p>Саудитска Арабия и по-голямата част от Арабския п-ов имат <strong>тропично-пустинен</strong> климат с рекордни температури (+54°C Митрибах, Кувейт, 2016) и почти никакви валежи (<50 мм/год.). Причина: постоянен субтропичен антициклон.</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="belt-trop">
+        <div class="prose">
+          <p><strong>Тропичен пояс</strong> — Арабски п-ов, голяма część от Индия. Два типа: <strong>тропично-пустинен</strong> (Сахаро-Арабски тип — жарко и сухо целогодишно) и <strong>тропично-мусонен</strong> (Южна Индия, Бирма — суха зима, дъждовно лято).</p>
+          <p>Чeрапунджи (Мегалая, Индия) е едно от <strong>най-дъждовните места на Земята</strong> — средно 11 430 мм/год. Причина: Хималаите принуждават влажния летен монсун да се издига, охлажда и кондензира.</p>
+        </div>
+        <div class="hydro-wrapper">
+          <div class="oc-label" style="font-family:'Space Mono';font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">Хидроклиматограма: Чeрапунджи (тропично-мусонен)</div>
+          <svg viewBox="0 0 600 280" class="climate-chart">
+            <line x1="60" y1="220" x2="580" y2="220" stroke="#aaa" stroke-width="1"/>
+            <line x1="60" y1="20" x2="60" y2="220" stroke="#aaa" stroke-width="1"/>
+            <!-- temp line (warm all year) -->
+            <polyline points="80,155 120,150 160,140 200,130 240,125 280,128 320,130 360,128 400,132 440,140 480,152 520,157"
+              fill="none" stroke="#e85d20" stroke-width="2.5"/>
+                    <text x="80" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Я</text>
+              <text x="120" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Ф</text>
+              <text x="160" y="240" font-family="Space Mono" font-size="9" fill="#aaa">М</text>
+              <text x="200" y="240" font-family="Space Mono" font-size="9" fill="#aaa">А</text>
+              <text x="240" y="240" font-family="Space Mono" font-size="9" fill="#aaa">М</text>
+              <text x="280" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Ю</text>
+              <text x="320" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Ю</text>
+              <text x="360" y="240" font-family="Space Mono" font-size="9" fill="#aaa">А</text>
+              <text x="400" y="240" font-family="Space Mono" font-size="9" fill="#aaa">С</text>
+              <text x="440" y="240" font-family="Space Mono" font-size="9" fill="#aaa">О</text>
+              <text x="480" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Н</text>
+              <text x="520" y="240" font-family="Space Mono" font-size="9" fill="#aaa">Д</text>
+            <!-- huge rain bars June-Aug -->
+            <rect x="70" y="217" width="18" height="3" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="110" y="215" width="18" height="5" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="150" y="208" width="18" height="12" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="190" y="185" width="18" height="35" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="230" y="90" width="18" height="130" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="270" y="25" width="18" height="195" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="310" y="30" width="18" height="190" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="350" y="70" width="18" height="150" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="390" y="165" width="18" height="55" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="430" y="207" width="18" height="13" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="470" y="215" width="18" height="5" fill="#1a7a6e" opacity="0.8"/>
+            <rect x="510" y="218" width="18" height="2" fill="#1a7a6e" opacity="0.8"/>
+            <!-- labels -->
+         
+            <text x="62" y="130" font-family="Space Mono" font-size="8" fill="#aaa">+18°</text>
+            <text x="62" y="155" font-family="Space Mono" font-size="8" fill="#aaa">+14°</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="belt-eq">
+        <div class="prose">
+          <p><strong>Субекваториален пояс</strong> — Южна Азия и Индокитайският п-ов. Горещо (+26–30°C) целогодишно, сухи и дъждовни сезони. <strong>Екваториален пояс</strong> — Малайски архипелаг (Калимантан, Суматра), южните Филипини. Горещо и влажно целогодишно, без изразени сезони, валежи >2000 мм/год, равномерно разпределени. Тропически дъждовни гори (джунгли).</p>
+        </div>
+        <div class="olympic-corner">
+          <div class="oc-label">⭐ Олимпийско ниво</div>
+          <h4>ИТЦ (Интертропическа конвергентна зона)</h4>
+          <ul>
+            <li>ИТЦ е зона, където пасатите от двете полукълба се срещат → нагряване → изкачване → облачност и валежи</li>
+            <li>Мигрира сезонно следвайки слънцето → на север (юни–август) → монсун в Южна Азия</li>
+            <li>Обяснява защо екваториалният пояс е дъждовен целогодишно (ИТЦ го покрива постоянно)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ВОДИ -->
+<section class="section" id="waters">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">03</div>
+      <div class="section-title-block">
+        <div class="subtitle">Хидрология</div>
+        <h2>Вътрешни води на Азия</h2>
+      </div>
+    </div>
+
+    <div class="prose reveal">
+      <p>Азия има <strong>огромно богатство от води</strong> — голям брой дълги и пълноводни реки, големи езера, множество блата, обширни ледници и значителни запаси на подземни води. Климатичните размери, сложният релеф и различните условия на овлажняване са определящите фактори за <strong>неравномерното разпределение</strong> на водите. С най-голямо количество води разполагат Северна, Източна и Южна Азия.</p>
+      <p><strong>Главният вододел</strong> на континента е сложен — територията на Азия попада в четири отточни области: <strong>северна</strong> (към Северния ледовит океан), <strong>източна</strong> (към Тихия океан), <strong>южна</strong> (към Индийския океан) и <strong>западна</strong> (към Средиземно море). Около 1/3 от земите на Азия принадлежат на <strong>най-голямата безотточна област</strong> на Земята.</p>
+    </div>
+
+    <div class="tabs reveal">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'rivers-main')">Главни реки</button>
+        <button class="tab-btn" onclick="switchTab(this,'lakes-main')">Езера</button>
+        <button class="tab-btn" onclick="switchTab(this,'inland-water')">Вътрешен отток</button>
+      </div>
+
+      <div class="tab-panel active" id="rivers-main">
+        <table class="data-table">
+          <thead>
+            <tr><th>Река</th><th>Дължина (км)</th><th>Водосборен басейн (km²)</th><th>Океан/море</th><th>Особеност</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Янцзъ (Чанцзян)</strong></td><td>6300</td><td>1 800 000</td><td>Тих океан</td><td>Най-дълга в Азия; извира от Тибет; „Три клисури" ВЕЦ; в периода на мусоните често излиза от бреговете</td></tr>
+            <tr><td><strong>Жълта (Хуанхъ)</strong></td><td>5464</td><td>752 000</td><td>Тих океан</td><td>Извира от Льосовото плато; жълти скали оцветяват водата; ясен летен максимум и зимен минимум</td></tr>
+            <tr><td><strong>Об-Иртиш</strong></td><td>5410</td><td>2 990 000</td><td>С.Лед. океан</td><td>Извира от Алтай; пълноводна от снегове; замръзва 4–5 месеца; ползва се за корабоплаване за кратък период</td></tr>
+            <tr><td><strong>Амур</strong></td><td>4444</td><td>1 855 000</td><td>Тих океан</td><td>Граница Русия-Китай; мусонен режим</td></tr>
+            <tr><td><strong>Ганг</strong></td><td>2510</td><td>1 060 000</td><td>Инд. океан</td><td>Извира от Хималаите; свещена за индусите; заедно с Брахмапутра образуват делтата на Земята (80 000 km²) — Бенгалски залив</td></tr>
+            <tr><td><strong>Тигър и Ефрат</strong></td><td>1900/2800</td><td>—</td><td>Персийски залив</td><td>Извират от планините Мала Азия; Месопотамска низина; субтропичен режим — максимум напролет</td></tr>
+            <tr><td><strong>Инд</strong></td><td>3180</td><td>1 165 000</td><td>Инд. океан</td><td>Люлка на Индската цивилизация; захранван от ледници на Хималаите</td></tr>
+            <tr><td><strong>Меконг</strong></td><td>4500</td><td>795 000</td><td>Юж.Кит.море</td><td>„Дунав на Изтока"; 6 страни; важен риболов и напояване</td></tr>
+            <tr><td><strong>Амудария</strong></td><td>2540</td><td>309 000</td><td>Аралско море</td><td>Вътрешен отток; Аралска трагедия</td></tr>
+          </tbody>
+        </table>
+
+        <div class="question-card">
+          <div class="q-label">Задача от учебника (ур. 41–42)</div>
+          <p>С какво е уникално всяко от езерата Байкал, Мъртво море, Каспийско море? Как ще обясните сезонните изменения в нивото на реките, вливащи се в Индийския океан? Какво трябва да се предприеме по време на наводнение?</p>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Нов въпрос — хидрограми</div>
+          <p>Погледнете хидрограмата на р. Об и на р. Ганг. Защо максимумът на р. Об е напролет, а на р. Ганг — лятото? Какво означава зимният минимум при Об?</p>
+        </div>
+        <div class="prose">
+          <p><strong>Обяснение:</strong> Об — захранване от <strong>снегове</strong>; максимум при топене напролет; зимен минимум защото реката <strong>замръзва</strong> (плавателна само за кратък период). Ганг — захранване от <strong>летен мусон</strong>; максимум юли–август; зимен минимум при сухия мусон. Типичен <strong>нивален</strong> (снежен) режим vs. <strong>мусонен</strong> режим.</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="lakes-main">
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">🌊</div>
+            <h3>Каспийско море</h3>
+            <p>Най-голямото езеро в света (371 000 km²). Безотточно, солено (≈12‰). Тектонски произход + наследство от Паратетис. Богато на нефт и газ.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">💧</div>
+            <h3>Байкал</h3>
+            <p>Най-дълбокото езеро (1642 м) и най-голямото сладководно (23 615 km³). Рифтов произход. Съдържа ~20% от незамразената сладка вода на Земята.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏔️</div>
+            <h3>Аралско море</h3>
+            <p>Екологична трагедия — от 68 000 km² (1960) намалява до <10 000 km² (2020) заради пренасочване на Амудария и Сирдария за напояване на памук.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">☠️</div>
+            <h3>Мъртво море</h3>
+            <p>Най-ниска точка на сушата (−430 м). Соленост 34% — 10 пъти по-солено от океана. Намалява с ~1 м/год. Граница Израел-Йордания.</p>
+          </div>
+        </div>
+
+        <div class="olympic-corner">
+          <div class="oc-label">⭐ Олимпийско ниво</div>
+          <h4>Аралската трагедия — причини и следствия</h4>
+          <ul>
+            <li>1960-те: Съветски план за напояване на памучни плантации → пренасочване на Амудария и Сирдария</li>
+            <li>Резултат: Солените пясъци отравят почвите в Аралско море → пясъчни бури разпространяват пестицидите и солта в радиус 300+ км</li>
+            <li>Рибарските общности унищожени — 60 000 рибари без поминък</li>
+            <li>Микроклиматичен ефект: без смекчаващото влияние на езерото → по-горещо лято, по-студена зима в региона</li>
+            <li>Частично възстановяване: Казахстан строи язовир (Кокаралска язовирна стена) → Северното Арал се възстановява частично</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="inland-water">
+        <div class="prose">
+          <p><strong>Областта на вътрешния отток</strong> заема около 1/3 от Азия — Централна Азия, Иранското плато, Арабски п-ов. Тук реките не достигат океана, а се губят в пустините или се вливат в безотточни езера.</p>
+          <p>Причина: <strong>ариден климат</strong> (малко валежи, голямо изпарение) + <strong>планински бариери</strong>, блокиращи влагата. Централна Азия е оградена от Тяншан, Памир, Хиндукуш, Ибиро-Монголски масив.</p>
+          <p><strong>Такъри</strong> (солени низини) и <strong>солончаци</strong> (хлоридно-сулфатни почви) са типични за тези региони. Каракумски канал (Туркменистан, 1375 км) е сред най-дългите напоителни канали в света.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРИРОДНИ ЗОНИ -->
+<section class="section section-dark" id="zones">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">04</div>
+      <div class="section-title-block">
+        <div class="subtitle">Биогеография</div>
+        <h2>Природни зони</h2>
+      </div>
+    </div>
+
+    <div class="prose reveal">
+      <p>Азия е <strong>единственият континент, в който се формират всички природни зони на Земята</strong>. Обликът им е сходен с този в другите континенти, но от тях по никои растителни и животински видове. Разпределят се в посока от Екватора към Северния ледовит океан.</p>
+    </div>
+
+    <div class="accordion reveal">
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🌴 Зона на влажните екваториални и тропични гори
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            Заема Малайския архипелаг и части от п-овете Индостан, Индокитай и остров Шри Ланка. Климатът е влажен, постоянно високи температури, реките са постоянно пълноводни. Върху непроходимите гори, наречени <strong>джунгли</strong>, има над 3000 вида. Особено интересни: палмата ротанг, хлебното дърво, красивите орхидеи, фикуси и лиани. Цветовете на <strong>Рафлезия арнолди</strong> — най-голям цвят на планетата, достига до 105 см ширина и тежи до 7 кг. Типични животни: орангутан (среща се само на два острова от Малайски архипелаг), носорог, малайски тигър, маймуни, варан от о. Комодо (най-голям гущер — до 3–4 м дължина, 70–100 кг).
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🌿 Зона на саваните
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            Обхваща обширни пространства във вътрешността на п-овете Индостан и Индокитай. Климатът е субекваториален, с по-продължителен сух сезон. Развиват се <strong>червено-кафяви почви</strong>. Ценни дървесни видове: тиково дърво (най-здравата дървесина), фикус — банан. Животни: индийски слон, носорог, бегемот, мангусти и някои видове маймуни, кобра.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🏜️ Зона на тропичните пустини
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            Заема Арабския п-ов и южните части на Месопотамската низина. Климатът е тропичен — горещ, с оскъдни валежи. Липсват постоянни води. Растителността е рядка — сухи треви, твърдолистни храсти, в оазисите — финикови палми. Животни: еднога̒рба камила, заек, антилопи и диви магарета. Повечето хора живеят по крайбрежията и в Персийския залив, в оазисите.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🌿 Зона на твърдолистните вечнозелени гори и храсти
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            Обхваща ограничени площи по Средиземноморското крайбрежие, южните части на п-ов Корея, Японските острови и малка část от крайбрежието на Жълто море. Климатът е субтропичен. По Средиземноморското крайбрежие летото е сухо и горещо, а зимата — мека и влажна. По Тихоокеанското крайбрежие под влияние на мусоните летото е топло и влажно, а зимата — студена и суха. Разпространен е <strong>вечнозеленият дъб, кипарисът, ливанският кедър</strong>. Визточните части растат бамбук, камфорово дърво, чаен храст. Срещат се <strong>бамбукова мечка</strong> и японски жерав.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🏔️ Зона на вътрешноконтиненталните пустини
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            Заема обширни територии от Средна Азия, включително пустинята <strong>Гоби</strong>. Характерни форми: каменисти, глинести и пясъчни пустини. Отдалечеността от океаните и ограничението от планинските бариери не допускат влажен океански въздух. Климатът е <strong>рязко континентален</strong> — горещо лято и студена зима. В Гоби е измерена от най-голямата амплитуди: +45°C лято до −40°C зима. Валежите са 50–200 мм/год. Почви бедни на органични вещества. Растения: <strong>сакс аул и тамарикс</strong>. Животни: двугърба камила (коза), дива магаре — кулан. Слабо населена зона.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🌾 Зона на степите
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            Разположена е на север от вътрешноконтиненталните пустини. Плоска, равнинна. Климатът е умерен континентален — горещо лято и студена зима. Водното количество в реките е непостоянно, зимата някои замразяват. Преобладават <strong>черноземните почви</strong> — тревиста степна растителност. Животни: полска мишка, хомяк, лалугер, яребица, чучулига. Условията за земеделие са благоприятни. Днес степите са обработваеми земи, в ограничени територии — с естествени видове.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🌲 Зона на горите в умерения пояс (Тайга и широколистни)
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            Обхваща широка ивица от Урал до Тихоокеанското крайбрежие. На юг — широколистните и смесените гори, на север — <strong>иглолистните (тайгата)</strong>. Климатът е умерен континентален, а по Тихоокеанското крайбрежие — под влияние на мусоните.<br><br>
+            <strong>Широколистните гори</strong> в ЮИ части са богати: бреза и бамбук, лиани и диви лози, кафява мечка, усурийски тигър. На Японските острови живеят маймуни. Типични видове: магнолия, ясен, клен, женшен.<br><br>
+            <strong>Тайгата</strong> — най-компактния горски масив на Земята: смърч, ела, сибирски бор, а на изток — <strong>лиственица</strong> (единственото дърво, чиито иглички опадат зимата). Животни: лисица, белка, златка, лос, кафява мечка, вълк, катерица. Основна стопанска дейност — дърводобив.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          🧊 Зона на тундрата и полярните пустини
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            <strong>Тундра</strong> — северните части на континента. Климатът е субполярен. Зимата е дълга и студена, лятото — кратко и прохладно. Почвата се размразява и повърхността се покрива с блата. Растителността: <strong>лишеи и мъхове</strong>. Типичен обитател — <strong>северен елен</strong>. Зоната е рядко населена; основни стопански дейности — еленовъдство и риболов.<br><br>
+            <strong>Полярни пустини</strong> — острови в Северния ледовит океан, покрити с ледници. Климатът е много суров, полярна нощ, силни ветрове, малко валежи. Животни: <strong>бяла мечка, тюлен</strong>, морж, бяла лисица. Постоянно население в зоната няма.<br><br>
+            <strong>Планинска природна област</strong> — Хималаи, Тяншан, Тибетска планинска земя. Вертикалната поясност е от подножие (тропична) до върховете (вечни снегове). Животни: як, кабарга, снежен леопард, хималайска мечка, сив лангур, червена панда, такин.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-card reveal">
+      <div class="q-label">Задача от учебника (ур. 43–44)</div>
+      <p>Опишете по правилото една от природните зони. Как се различават вътрешноконтиненталните пустини от тропичните пустини? С помощта на атласа направете мислено пътешествие из природните зони по 40-ия меридиан — какво ще видите от север на юг?</p>
+    </div>
+
+    <div class="question-card reveal">
+      <div class="q-label">Нов въпрос</div>
+      <p>Защо лиственицата е единственото иглолистно дърво, което расте в тайгата върху вечна замръзналост, докато смърчът и борът не могат?</p>
+    </div>
+    <div class="prose reveal">
+      <p><strong>Обяснение:</strong> Лиственицата е <strong>листопадна</strong> — иглите й опадат зимата, за разлика от вечнозелените смърч и бор. Така намалява транспирацията (изпарението на вода) в студения сезон. Освен това има <strong>плитка и широка коренова система</strong>, която расте само в размразения горен слой (активен слой) — не прониква в замразените дълбочини. Вечнозелените дървета нямат тази адаптация.</p>
+    </div>
+
+    <div class="question-card reveal">
+      <div class="q-label">Олимпийски въпрос</div>
+      <p>Защо природните зони не образуват строги ширинни пояси в Азия, а образуват сложна мозайка? Каква е ролята на планините и „орографичния ефект"?</p>
+    </div>
+    <div class="prose reveal">
+      <p><strong>Обяснение:</strong> Планините предизвикват <strong>вертикална зоналност</strong> (планинска поясност) — от подножието до върха се сменят зони подобно на ширинната зоналност. Хималаите, Тяншан, Памир имат ярко изразена поясност. Освен това, планините блокират валежи — <strong>„дъждовна сянка"</strong>: наветреният склон е влажен, завятерният — сух. Затова Гоби е пустиня въпреки близостта до Тихия океан, а Тибет е сух въпреки тропическата географска ширина.</p>
+    </div>
+
+    <div class="flashcard-section reveal">
+      <p class="flashcard-hint">↓ Кликни върху картата, за да видиш отговора</p>
+      <div class="flashcard-grid" id="zone-flashcards">
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Коя е най-голямата природна зона в Азия?</div>
+            <div class="flashcard-back">Тайга (иглолистни гори) — заема по-голямата част от Сибирия, над 10 млн. km²</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Какво е вечна замръзналост (permafrost)?</div>
+            <div class="flashcard-back">Слой почва или скала, замразени постоянно (>2 год.). Покрива ~25% от сушата. Топи се при затопляне → отделя СН₄ и СО₂.</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Защо Тибет е пустиня, въпреки горещите съседни региони?</div>
+            <div class="flashcard-back">Хималаите блокират влажния монсун → „дъждовна сянка". Тибет получава <300 мм/год. въпреки географската ширина.</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Кои мангрови гори са застрашени в Азия и защо са ценни?</div>
+            <div class="flashcard-back">Делта Ганг-Брамапутра (Сундарбани). Ценни: защита от урагани и цунами, развъдник за риби, поглъщат CO₂. Застрашени от обезлесяване и покачване на морето.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ИКОНОМИКА -->
+<section class="section" id="economy">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">05</div>
+      <div class="section-title-block">
+        <div class="subtitle">Икономическа география</div>
+        <h2>Население, политическа карта и стопанство</h2>
+      </div>
+    </div>
+
+    <div class="tabs reveal">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(this,'pop-tab')">Население</button>
+        <button class="tab-btn" onclick="switchTab(this,'polmap-tab')">Политическа карта</button>
+        <button class="tab-btn" onclick="switchTab(this,'econ-tab')">Стопанство</button>
+      </div>
+
+      <div class="tab-panel active" id="pop-tab">
+        <div class="prose">
+          <p>Азия е <strong>най-населеният континент</strong> на Земята с около <strong>4.77 млрд. жители</strong> — в него живеят около 60% от населението на света. Най-бързо нараства население в Източна и Южна Азия.</p>
+          <p><strong>Средната гъстота</strong> на населението в Азия е около 107 д/km² — по този показател континентът заема първо място. Въпреки това разпределението е <strong>крайно неравномерно</strong>: най-гъсто са заселени Голямата китайска равнина, Японските и Филипинските острови, п-ов Корея, Индо-Гангската и Месопотамската низина, Малайският архипелаг. Най-рядко — северните територии, пустините и високите планини.</p>
+          <p>В Азия живеят представители на трите основни раси. Около <strong>60%</strong> са от <strong>монголоидната раса</strong> — китайци, монголци, японци, корейци, народите на п-ов Индокитай. <strong>Европеидната раса</strong> е представена главно в Северна, Югозападна и Южна Азия — арабите, индийците, иранците, афганистанците, турците и руснаците. <strong>Негроидната раса</strong> заема малка część — о. Шри Ланка, южните части на Индостан, отделни острови.</p>
+          <p>Азия е <strong>родината на всички световни религии</strong> — тук са свещените градове: <strong>Мека и Медина</strong> (ислям), <strong>Варанаси</strong> (индуизъм), <strong>Йерусалим</strong> (три религии), <strong>Лхаса</strong> (будизъм).</p>
+        </div>
+
+        <table class="data-table">
+          <thead><tr><th>Страна</th><th>Население (2020)</th><th>Прогноза 2025</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Китай</strong></td><td>1 400 315 000</td><td>1 407 947 000</td></tr>
+            <tr><td><strong>Индия</strong></td><td>1 395 565 000</td><td>1 481 469 000</td></tr>
+            <tr><td><strong>Индонезия</strong></td><td>273 179 000</td><td>288 071 000</td></tr>
+            <tr><td><strong>Пакистан</strong></td><td>242 923 845</td><td>—</td></tr>
+            <tr><td><strong>Япония</strong></td><td>124 728 000</td><td>122 056 000 ↓</td></tr>
+            <tr><td><strong>Турция</strong></td><td>82 559 000</td><td>85 726 000</td></tr>
+            <tr><td><strong>Р. Корея</strong></td><td>51 079 000</td><td>51 561 000</td></tr>
+          </tbody>
+        </table>
+        <div class="prose" style="font-size:0.78rem;color:#888;margin-top:-1rem;">Източник: Обединени нации, 2022 г.</div>
+
+        <div class="question-card">
+          <div class="q-label">Задача от учебника (ур. 46–47)</div>
+          <p>Кои са причините за неравномерното разпределение на населението в континента? Характеризирайте го. Кои са типичните му проблеми? Нанесете държавите върху политическата карта на Азия.</p>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Нов въпрос</div>
+          <p>Таблицата показва, че Япония ще намалее с около 2.7 млн. до 2025 г., докато Индия ще се увеличи с над 86 млн. Как ще обясните тази разлика с демографския преход?</p>
+        </div>
+        <div class="prose">
+          <p><strong>Обяснение:</strong> Япония е в <strong>4-та фаза</strong> на демографския преход — ниска раждаемост, ниска смъртност, застаряване. Демографска инерция на намаляване. Индия е в <strong>3-та фаза</strong> — намаляваща раждаемост, но все още висок прираст; огромна база от млади хора (демографски дивидент). Демографският преход обяснява защо богатите страни намаляват, а по-бедните с бързо развиваща се икономика растат.</p>
+        </div>
+
+        <div class="olympic-corner">
+          <div class="oc-label">⭐ Олимпийско ниво</div>
+          <h4>Демографски преход в Азия</h4>
+          <ul>
+            <li>Япония: 4-та фаза → застаряване, отрицателен прираст, работни мигранти</li>
+            <li>Китай: последствия от политиката „едно дете" (1980–2015) → застаряване, дефицит на работна сила, промяна на политиката</li>
+            <li>Индия: 3-та фаза → демографски дивидент (голям дял млади) — конкурентно предимство</li>
+            <li>Близкия изток: висок прираст, млада демографска структура, нарастваща урбанизация</li>
+            <li>Демографски дивидент vs. демографско бреме — ключово за икономическото развитие</li>
+          </ul>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Помисли</div>
+          <p>Защо дори при политика „едно дете" Китай продължаваше да расте десетилетия? Каква роля играе инерцията на демографския растеж?</p>
+        </div>
+        <div class="prose">
+          <p><strong>Обяснение:</strong> Демографската инерция — голямото поколение родено преди рестрикцията достига репродуктивна възраст и поражда нова вълна от деца, дори и при намален TFR (коефициент на плодовитост). Ако основата е огромна (1 млрд.), дори малкия процент прираст дава милиони нови хора.</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="polmap-tab">
+        <div class="prose">
+          <p>Азия включва <strong>49 суверенни държави</strong> (по ООН), разделени на пет субрегиона:</p>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Субрегион</th><th>Ключови страни</th><th>Характеристика</th></tr></thead>
+          <tbody>
+            <tr><td>Северна Азия</td><td>Русия (азиатска част)</td><td>Сибирия — ресурси, ниска гъстота</td></tr>
+            <tr><td>Централна Азия</td><td>Казахстан, Узбекистан, Туркменистан, Таджикистан, Киргизстан</td><td>Постсъветски; нефт, газ, памук</td></tr>
+            <tr><td>Западна Азия (Близкия Изток)</td><td>Турция, Саудитска Арабия, ОАЕ, Израел, Иран, Ирак</td><td>Нефт; религиозни конфликти; стратегически пролив</td></tr>
+            <tr><td>Южна Азия</td><td>Индия, Пакистан, Бангладеш, Шри Ланка</td><td>Огромно население; бедност и растеж</td></tr>
+            <tr><td>Източна Азия</td><td>Китай, Япония, Ю.Корея, С.Корея, Монголия</td><td>Икономически гиганти; хай-тек</td></tr>
+            <tr><td>Югоизточна Азия</td><td>Индонезия, Виетнам, Тайланд, Малайзия, Сингапур</td><td>ASEAN; туризъм; производство</td></tr>
+          </tbody>
+        </table>
+        <div class="prose">
+          <p>Сред <strong>спорните територии</strong>: Тайван (Република Китай); Кашмир (Индия-Пакистан); Южнокитайско море (Китай, Виетнам, Филипини, Малайзия); Курилски острови (Русия-Япония); Палестина.</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="econ-tab">
+        <div class="prose">
+          <p>Стопанството на Азия включва <strong>развити, средноразвити и по-изостанали</strong> страни. В Азия са съсредоточени около <strong>60% от световните запаси на полезни изкопаеми</strong> — 2/3 от световните резерви на нефт са в Персийския залив.</p>
+          <p><strong>Добивни дейности:</strong> Земеделието е водещо за голяма část. Отглеждат се зърнени култури — ориз, пшеница, царевица, соя (Китай — 1-во в света). Чай — Индия, Китай, Шри Ланка. Памук — Индия, Китай, Пакистан. Над 60% от плодовете с фъстъци в света са от Югоизточна Азия. Развит риболов и аквакултури.</p>
+          <p><strong>Обработващи дейности:</strong> Енергетиката разчита на изкопаеми горива и ВЕЦ (р. Янцзъ — „Три клисури", най-мощната в света). Китай и Япония са най-голямото производители на леки автомобили. Характерно за Източна Азия: електроника, автомобили, битова електротехника. За Персийския залив — нефтохимическата промишленост.</p>
+          <p><strong>Обслужващи дейности:</strong> 9 от 10-те пристанища с най-голям товарооборот са в Азия. Туризмът привлича милиони — Анкор Ват, Тадж Махал, Стената на Китай, Велика китайска стена, природни забележителности. Индия е страната с <strong>най-голям брой туристи</strong> — 58 млн./год. Китай има <strong>най-голямата ВСЖ мрежа</strong> в света.</p>
+        </div>
+
+        <div style="background:rgba(26,122,110,0.12);border:1px solid var(--teal);padding:1.5rem;margin:2rem 0;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.3em;color:var(--teal);text-transform:uppercase;margin-bottom:0.8rem;">🌍 Географска мозайка от учебника</div>
+          <p style="font-size:0.9rem;line-height:1.7;color:rgba(245,240,232,0.85);">В Азия се произвеждат 93% от световния каучук, 90% от ориза, 80% от чая. ● Китай и Япония са най-големите производители на леки автомобили в света. ● Китай е изграждал най-общирната мрежа от ВСЖ в света. ● Тадж Махал (Индия) е най-красивото лирично съоръжение в света — символ на вечната любов.</p>
+        </div>
+
+        <div class="question-card">
+          <div class="q-label">Задача от учебника (ур. 48)</div>
+          <p>Кои природни фактори оказват влияние върху развитието на земеделието в континента? Кои промишлени стоки от Азия се продават на българския пазар? Съставете текст, в който свързвате знанията си за Месопотамия от историята (5. клас) с географските знания.</p>
+        </div>
+        <div class="olympic-corner">
+          <div class="oc-label">⭐ Олимпийско ниво</div>
+          <h4>„Азиатски тигри" и модели на развитие</h4>
+          <ul>
+            <li>Четирите тигъра (1960–90-те): Япония, Ю.Корея, Тайван, Сингапур — бърза индустриализация чрез износ</li>
+            <li>Общи черти: авторитарно/силно държавно ръководство, инвестиции в образование, фокус върху износ, чуждестранни инвестиции</li>
+            <li>Новите тигри: Виетнам, Тайланд, Малайзия, Индонезия — следват подобен модел</li>
+            <li>Китайският модел: „социализъм с китайски характеристики" — пазарна икономика + партиен контрол; „Сделан в Китай 2025" — от имитация към иновация</li>
+            <li>Индийският модел: IT аутсорсинг, фармацевтика, растяща средна класа → „Индия на услугите"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- СТРАНИ -->
+<section class="section section-dark" id="countries">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num">06</div>
+      <div class="section-title-block">
+        <div class="subtitle">Регионална география</div>
+        <h2>Страни на Азия</h2>
+      </div>
+    </div>
+
+    <!-- ЯПОНИЯ -->
+    <div class="country-section reveal">
+      <div class="country-header">
+        <div class="country-flag-big">🇯🇵</div>
+        <div>
+          <div class="country-tag">Островна Източна Азия</div>
+          <div class="country-name">Япония</div>
+        </div>
+      </div>
+      <div class="country-facts">
+        <div class="fact-item"><div class="fact-label">Площ</div><div class="fact-val">377 975 km²</div></div>
+        <div class="fact-item"><div class="fact-label">Население</div><div class="fact-val">~124 млн.</div></div>
+        <div class="fact-item"><div class="fact-label">Столица</div><div class="fact-val">Токио</div></div>
+        <div class="fact-item"><div class="fact-label">БВП (ном.)</div><div class="fact-val">~4.2 трлн. USD</div></div>
+        <div class="fact-item"><div class="fact-label">Форма на управл.</div><div class="fact-val">Конст. монархия</div></div>
+        <div class="fact-item"><div class="fact-label">Гъстота</div><div class="fact-val">~328 д/km²</div></div>
+      </div>
+      <div class="prose">
+        <p><strong>Природа:</strong> Япония е <strong>най-източно разположената</strong> азиатска страна — островна държава в Тихия океан с четири главни острова и множество малки. Релефът е предимно планински с <strong>действащи вулкани</strong> — най-известен е <strong>Фудзияма (3776 м)</strong>. Земетресенията предизвикват огромни вълни — <strong>цунами</strong>. Проблем за многолюдната страна е недостигът на удобна за живеене и стопанска дейност земя — равнините заемат едва 20% от площта. Япония е бедна на полезни изкопаеми — внася горива (нефт, природен газ, отчасти въглища) и уран.</p>
+        <p><strong>Климат:</strong> Умерен на север (Хокайдо), субтропичен на юг (Кюшу, Окинава). Под влияние на мусоните — лятото е топло и влажно, зимата — студена и суха. Тайфуни (юли–октомври). <strong>Сакурата</strong> е национален символ — цъфтежът се наблюдава с тържество.</p>
+        <p><strong>Население:</strong> В Япония живеят около 124 млн. души. Средната гъстота е голяма — 332 д/km². Живеят предимно по крайбрежията. <strong>99% са японци</strong>. Около 70% изповядват будизъм. Средна продължителност на живота — <strong>около 85 години</strong> — сред най-дългите в света. Огромна część живее в градовете — Токио, Йокохама, Осака, Кобе.</p>
+        <p><strong>Стопанство — най-високо развита страна в Азия:</strong> Земеделието е интензивно — ориз, чай, зеленчуци; развит риболов и аквакултури. Промишленост: автомобили, кораби, мотоциклети, скоростни влакове, електроника, битова електротехника. <strong>Производство на промишлени роботи</strong> — страната заема първо място в света. Традиционна е копринотекстилната промишленост. За вноса и износа <strong>морският транспорт</strong> е с найголямо значение.</p>
+      </div>
+
+      <div class="question-card">
+        <div class="q-label">Задача от учебника (ур. 49–51)</div>
+        <p>Сравнете характеристиките на Китай, Япония и Република Корея. Кой от трите страни бихте искали да посетите? Обяснете избора си.</p>
+      </div>
+
+      <div class="question-card">
+        <div class="q-label">Нов въпрос</div>
+        <p>Япония е почти без природни ресурси, но е 3-та икономика в света. Как е постигнала това? Кои са трите ключови фактора?</p>
+      </div>
+      <div class="prose">
+        <p><strong>Обяснение:</strong> <strong>1. Човешки капитал</strong> — образовани, дисциплинирани работници; ниска текучест; дългосрочно мислене. <strong>2. Технологии и иновации</strong> — от имитация (50-те) към иновация; Toyota Production System (Lean/Just-in-time). <strong>3. Географско положение</strong> — на прехода между Азия и Тихия океан → морска търговия. Уроците на Мейджи реставрацията (1868): „учи от най-добрите" → ускорена модернизация.</p>
+      </div>
+      <div class="olympic-corner">
+        <div class="oc-label">⭐ Олимпийско ниво — Япония</div>
+        <h4>Феноменът на японската икономика</h4>
+        <ul>
+          <li>„Японско икономическо чудо" (1955–1990): среден ръст >8%/год., „тотална война" срещу бедността</li>
+          <li>Кейрецу — конгломерати (Toyota, Mitsubishi, Sony) — хоризонтална интеграция</li>
+          <li>„Загубеното десетилетие" (1990–2010): спукване на имотния балон → стагнация, дефлация</li>
+          <li>Абеномика (2012): „три стрели" — монетарно стимулиране, бюджетни стимули, структурни реформи</li>
+          <li>Демографска криза: отрицателен прираст, застаряване → роботика и имиграционни реформи</li>
+        </ul>
+      </div>
+      <div class="question-card">
+        <div class="q-label">Анализ</div>
+        <p>Как Япония е успяла да стане икономическа суперсила въпреки почти пълната липса на природни ресурси?</p>
+      </div>
+      <div class="prose">
+        <p><strong>Обяснение:</strong> Japonia заменя ресурсите с <strong>човешки капитал</strong> (образование, дисциплина, иновации), <strong>технологии</strong> (преминава от имитация към иновация), <strong>организация</strong> (Toyota Production System — Lean manufacturing, Just-in-time). Отварянето след Мейджи реставрацията (1868) и американската помощ след WWII дава нов старт. Урок: липсата на ресурси може да стимулира иновации.</p>
+      </div>
+    </div>
+
+    <!-- РЕПУБЛИКА КОРЕЯ -->
+    <div class="country-section reveal">
+      <div class="country-header">
+        <div class="country-flag-big">🇰🇷</div>
+        <div>
+          <div class="country-tag">Корейски полуостров</div>
+          <div class="country-name">Република Корея</div>
+        </div>
+      </div>
+      <div class="country-facts">
+        <div class="fact-item"><div class="fact-label">Площ</div><div class="fact-val">100 210 km²</div></div>
+        <div class="fact-item"><div class="fact-label">Население</div><div class="fact-val">~51.7 млн.</div></div>
+        <div class="fact-item"><div class="fact-label">Столица</div><div class="fact-val">Сеул</div></div>
+        <div class="fact-item"><div class="fact-label">БВП (ном.)</div><div class="fact-val">~1.7 трлн. USD</div></div>
+        <div class="fact-item"><div class="fact-label">Форма на управл.</div><div class="fact-val">Република</div></div>
+        <div class="fact-item"><div class="fact-label">Урбанизация</div><div class="fact-val">>81%</div></div>
+      </div>
+      <div class="prose">
+        <p><strong>Географско положение:</strong> Република Корея се намира вИзточна Азия, в южната část на п-ов Корея. Територията е 100 хил. km². По суша граничи единствено с <strong>Корейската народна демократична република (КНДР)</strong>. Продължителността на живота е едно от най-дълги в света — средно 83 г.; голям проблем е намаляващият брой родени деца.</p>
+        <p><strong>Природни условия:</strong> Голяма část от релефа е ниско- или среднопланински; само около 30% са обработваеми. Волфрамови руди и графит. Климатът е умерен и субтропичен мусонен, но поради мусоните зимите стават студени. Около 64% от страната са покрити с гори.</p>
+        <p><strong>Население:</strong> 51.8 млн. Гъстота: 518 д/km² — сред най-гъстото. Националният съетав е еднороден — корейците са 99%. Основни религии: християнство и будизъм, но преобладаващи са атеистите. Живеят предимно в крайбрежните равнини. Столицата Сеул (10 млн.) — сред най-оживените градове в света.</p>
+        <p><strong>Стопанство:</strong> До 60-те е бедна страна, сега е сред 20-те най-развити икономики. Наричат я „<strong>чудото на река Хан</strong>". Развива се по японски модел: инвестиции в образование, висококвалифицирана работна сила, внедряване на най-новите технологии. <strong>Чеболите</strong> (семейни конгломерати) — Samsung, Hyundai, LG — са двигатели на растежа. Страната заема <strong>1-во място в производство на кораби</strong> и 2-ро по износ на синтетични влакна. Развита ВСЖ мрежа, свързваща градовете. Туристите привличат множество дворци, храмове и природни забележителности.</p>
+      </div>
+
+      <div class="question-card">
+        <div class="q-label">Нов въпрос</div>
+        <p>Защо разделен народ — Северна и Южна Корея — са стигнали до толкова различно икономическо развитие? Какви географски и политически фактори обясняват разликата?</p>
+      </div>
+      <div class="prose">
+        <p><strong>Обяснение:</strong> Южна Корея избра <strong>пазарна икономика + отваряне към света</strong> → чуждестранни инвестиции, образование, технологичен износ. Северна Корея — <strong>изолация, централизирано планиране, военни разходи</strong> → икономическа стагнация. Едни и същи природни ресурси, еднакъв народ, но различни политически системи дават диаметрално противоположни резултати след 70 г. — урок по икономическа география.</p>
+      </div>
+    </div>
+
+    <!-- КИТАЙ -->
+    <div class="country-section reveal">
+      <div class="country-header">
+        <div class="country-flag-big">🇨🇳</div>
+        <div>
+          <div class="country-tag">Изток / Централна Азия</div>
+          <div class="country-name">Китай</div>
+        </div>
+      </div>
+      <div class="country-facts">
+        <div class="fact-item"><div class="fact-label">Площ</div><div class="fact-val">9.6 млн. km²</div></div>
+        <div class="fact-item"><div class="fact-label">Население</div><div class="fact-val">~1.41 млрд.</div></div>
+        <div class="fact-item"><div class="fact-label">Столица</div><div class="fact-val">Пекин</div></div>
+        <div class="fact-item"><div class="fact-label">БВП (ном.)</div><div class="fact-val">~17.5 трлн. USD</div></div>
+        <div class="fact-item"><div class="fact-label">Форма на управл.</div><div class="fact-val">Еднопартийна република</div></div>
+        <div class="fact-item"><div class="fact-label">Граничи с</div><div class="fact-val">14 страни</div></div>
+      </div>
+      <div class="prose">
+        <p><strong>Природни условия:</strong> Преобладава планински релеф — важен фактор, влияещ върху разпределението на населението. В Голямата китайска равнина (Изток) са благоприятни почвено-климатичните условия — причина за развитието на древните цивилизации. Голямите реки <strong>Хуанхъ</strong> и <strong>Янцзъ</strong> (6300 км — най-дълга в Азия) извират от Тибет. Воните се разпределят неравномерно — на изток са с по-голямо значение за напояване и корабоплаване. На р. Янцзъ са изградени двете <strong>най-мощни ВЕЦ в света</strong> — „Три клисури".</p>
+        <p><strong>Население и управление:</strong> 1 410 539 758 души — <strong>най-многолюдната страна</strong>. Около 90% живеят в Източен Китай. 56 националности. Многообразни религии — будизъм, християнство, ислям и др. Най-големите градове: Шанхай (25+ млн.), Чунцин, Пекин. Китай е <strong>република</strong>. Столица — Пекин.</p>
+        <p><strong>Стопанство:</strong> Земеделие: ориз, пшеница, царевица, захарна тръстика, чай, памук, соя (1-во в света). Планинските склонове се обработват <strong>терасовидно</strong>. Обработващи дейности: <strong>абсолютен лидер</strong> в промишленото производство — електроника, автомобили, химически продукти, дрехи. Лидер в износа на над 100 вида стоки. Изграден е <strong>„Три клисури" ВЕЦ</strong> и <strong>най-голямата ВСЖ мрежа</strong> в света. ~58 млн. туристи годишно.</p>
+      </div>
+      <div class="olympic-corner">
+        <div class="oc-label">⭐ Олимпийско ниво — Китай</div>
+        <h4>„Инициатива Пояс и път" (BRI)</h4>
+        <ul>
+          <li>Обявена 2013, обхваща >140 страни и >$1 трлн. инвестиции</li>
+          <li>„Морски път на коприната" + „Нов Сухопътен път" — транспортна, енергийна и цифрова инфраструктура</li>
+          <li>Критики: „дипломация на дълговия капан" — страни поемат неподъемни дългове</li>
+          <li>Геополитически измерения: разширяване на китайското влияние в Африка, Централна Азия, Европа</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ТУРЦИЯ -->
+    <div class="country-section reveal">
+      <div class="country-header">
+        <div class="country-flag-big">🇹🇷</div>
+        <div>
+          <div class="country-tag">Западна Азия / Анадол</div>
+          <div class="country-name">Турция</div>
+        </div>
+      </div>
+      <div class="country-facts">
+        <div class="fact-item"><div class="fact-label">Площ</div><div class="fact-val">783 562 km²</div></div>
+        <div class="fact-item"><div class="fact-label">Население</div><div class="fact-val">~85 млн.</div></div>
+        <div class="fact-item"><div class="fact-label">Столица</div><div class="fact-val">Анкара</div></div>
+        <div class="fact-item"><div class="fact-label">БВП (ном.)</div><div class="fact-val">~1.1 трлн. USD</div></div>
+        <div class="fact-item"><div class="fact-label">Форма на управл.</div><div class="fact-val">Президентска република</div></div>
+        <div class="fact-item"><div class="fact-label">Ключова стратег.</div><div class="fact-val">Босфор и Дарданели</div></div>
+      </div>
+      <div class="prose">
+        <p><strong>Географско положение:</strong> Турция е страна на <strong>два континента</strong> — около 97% от територията е в Азия (п-ов Мала Азия), едва 3% — в Европа. Страната контролира важните проливи <strong>Босфор и Дарданели</strong> и има излаз на Черно, Мраморно и Средиземно море. Столица — Анкара; Истанбул (15.6 млн.) е най-големият град.</p>
+        <p><strong>Природни условия:</strong> Релефът е главно планински и платовиден. Благоприятни условия за земеделие: крайбрежни райони и европейската část. Полезни изкопаеми: въглища, медни и хромови руди. ~15% гори.</p>
+        <p><strong>Стопанство:</strong> В земеделието — <strong>лешници (1-во място в света)</strong>, памук, маслини, цитруси, ранни плодове и зеленчуци, овцевъдство и козевъдство. Промишленост: текстил, кожарска, хранително-вкусова, битова електротехника. Туризъм: Ефес, Троя, Пергамон, Кападокия — сред 7-те чудеса на античния свят.</p>
+      </div>
+      <div class="question-card">
+        <div class="q-label">Олимпийски въпрос</div>
+        <p>Защо проливите Босфор и Дарданели имат такова стратегическо значение в световната политика и икономика?</p>
+      </div>
+      <div class="prose">
+        <p><strong>Обяснение:</strong> Монтрьоски конвенция (1936) дава на Турция контрол над прохода и определя правилата за военни кораби. Черно море → Средиземноморие = единственият морски изход за Русия, Украйна, България, Румъния, Грузия. Зърно, нефт, военни кораби. Турция използва тези правомощия геополитически — затвори Босфора за руски военни кораби след 2022 г.</p>
+      </div>
+    </div>
+
+    <!-- САУДИТСКА АРАБИЯ -->
+    <div class="country-section reveal">
+      <div class="country-header">
+        <div class="country-flag-big">🇸🇦</div>
+        <div>
+          <div class="country-tag">Арабски полуостров</div>
+          <div class="country-name">Саудитска Арабия</div>
+        </div>
+      </div>
+      <div class="country-facts">
+        <div class="fact-item"><div class="fact-label">Площ</div><div class="fact-val">2 149 690 km²</div></div>
+        <div class="fact-item"><div class="fact-label">Население</div><div class="fact-val">~36 млн.</div></div>
+        <div class="fact-item"><div class="fact-label">Столица</div><div class="fact-val">Рияд</div></div>
+        <div class="fact-item"><div class="fact-label">БВП (ном.)</div><div class="fact-val">~1.1 трлн. USD</div></div>
+        <div class="fact-item"><div class="fact-label">Форма на управл.</div><div class="fact-val">Абсолютна монархия</div></div>
+        <div class="fact-item"><div class="fact-label">Нефтени резерви</div><div class="fact-val">#2 в света</div></div>
+      </div>
+      <div class="prose">
+        <p><strong>Географско положение:</strong> Саудитска Арабия е <strong>най-голямата държава</strong> на Арабския п-ов (2.2 млн. km²). Граничи със седем страни. На Югоизток стига до Персийския залив, а на запад — до Червено море. Наричана „<strong>страната на двете светини</strong>" — на нейна територия са <strong>Мека и Медина</strong> — свещени ислямски градове.</p>
+        <p><strong>Природни условия:</strong> Страната е разложена основно върху обширна планинска земя и пустиня (пясъчни и каменисти). Разполага с <strong>най-голямите запаси на нефт в света</strong> (2-ро място). Климатът е сух тропичен. Повърхностните води са непостоянни. Затова важно значение имат <strong>оазисите, дълбоките сондажи</strong> и обезсоляването на морска вода.</p>
+        <p><strong>Население:</strong> 35.4 млн. — гъстота 16 д/km². Основната část са <strong>араби</strong>, но значителен брой (~11 млн.) са мигранти от Африка, Южна и Югоизточна Азия. Преобладава младото население. Държавна религия — исляма. Население е концентрирано в градовете и оазисите. Столица Рияд (7.5 млн.); „икономическа столица" Джида; Мека, Медина, Дамам.</p>
+        <p><strong>Стопанство:</strong> Икономиката е базирана на <strong>значителни минерални ресурси</strong>. Земеделието: финикови палми, цитрусови, бобови, зърнени — в оазисите; с нарастване на приходите от нефт напояват засушливите райони. Обработващи дейности: <strong>нефтопреработвателни</strong>, металургия, текстил и хранително-вкусова промишленост. Износът на нефт — чрез Дамам (<strong>най-голямото пристанище за нефт</strong>). Трубопроводите свързват находищата с пристанищата. Годишно страната е посещавана от над 7 млн. туристи — <strong>поклонници в свещените градове</strong>.</p>
+      </div>
+
+      <div class="question-card">
+        <div class="q-label">Нов въпрос</div>
+        <p>Саудитска Арабия харчи милиарди за проект NEOM — футуристичен град в пустинята. Защо? Какво означава това за бъдещето на нефтозависимата им икономика?</p>
+      </div>
+      <div class="prose">
+        <p><strong>Обяснение:</strong> Нефтените запаси ще се изчерпят. „Ресурсното проклятие" (Dutch Disease) — нефтените приходи задушават другите сектори → монокултурна икономика → уязвимост при спад на цените. <strong>Визия 2030</strong> на принц Мохамед бин Салман: диверсификация, туризъм, технологии, Entertainment. NEOM е символ на тази амбиция — но и на рисковете от грандиозни планове без устойчива основа.</p>
+      </div>
+      <div class="olympic-corner">
+        <div class="oc-label">⭐ Олимпийско ниво — Саудитска Арабия</div>
+        <h4>ОПЕК и нефтеното оръжие</h4>
+        <ul>
+          <li>ОПЕК (Организация на страните износители на петрол) — 1960, Багдад. Саудитска Арабия е доминираща сила</li>
+          <li>Нефтеното ембарго (1973) срещу Запада → петролна криза → спад на световната икономика; урок: енергийна сигурност е национален приоритет</li>
+          <li>ОПЕК+ (включва Русия) — разширен картел</li>
+          <li>„Ресурсното проклятие" (Dutch Disease): нефтените приходи задушават другите сектори → монокултурна икономика → уязвимост при спад на цените</li>
+          <li>Саудитска Арабия се опитва да избегне ресурсното проклятие чрез Визия 2030</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FLASHCARDS СТРАНИ -->
+    <div class="flashcard-section reveal">
+      <div class="section-header" style="margin-bottom:1.5rem">
+        <div class="section-title-block">
+          <h2 style="font-size:1.8rem">Флашкарти — Страни</h2>
+        </div>
+      </div>
+      <p class="flashcard-hint">↓ Кликни за да обърнеш картата</p>
+      <div class="flashcard-grid">
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Как се нарича вулканът — символ на Япония и каква е височината му?</div>
+            <div class="flashcard-back">Фудзияма — 3776 м. Действащ вулкан, последно изригнал 1707 г. Свещен за японците. Световно наследство на ЮНЕСКО.</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Кои са „чеболите" на Южна Корея и какво представляват?</div>
+            <div class="flashcard-back">Samsung, Hyundai, LG, SK — семейни конгломерати. Двигатели на „чудото на река Хан". Корея заема 1-во място в производство на кораби.</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Защо Великата китайска стена е изградена?</div>
+            <div class="flashcard-back">Защита от номадски нашествия от север (хуни, монголи). Строена в различни периоди — Цин, Хан, Мин. Дължина ~21 000 км. ЮНЕСКО.</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Какво е Руб ал-Хали и каде е?</div>
+            <div class="flashcard-back">„Празният квартал" — най-голямата пясъчна пустиня в света (~650 000 km²), южна Саудитска Арабия. Почти необитаема.</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">С какво Турция е уникална географски?</div>
+            <div class="flashcard-back">Контролира Босфора и Дарданелите — единствен морски изход от Черно море. Трансконтинентална — 97% Азия, 3% Европа. Лешници — 1-во в света.</div>
+          </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">Защо Саудитска Арабия е наречена „страната на двете светини"?</div>
+            <div class="flashcard-back">На нейна територия са Мека (родното място на Пророка) и Медина (Джамията на Пророка) — двете свещени ислямски градове, посещавани от милиони поклонници.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="section" id="quiz-section" style="background: var(--deep);">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-num" style="color:rgba(212,160,23,0.15)">07</div>
+      <div class="section-title-block">
+        <div class="subtitle" style="color:var(--gold)">Самопроверка</div>
+        <h2 style="color:var(--paper)">Тест по Азия</h2>
+      </div>
+    </div>
+
+    <div class="quiz-container reveal">
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="quizProgressFill" style="width:0%"></div>
+      </div>
+
+      <div id="quiz-body">
+
+        <div class="question-block active" data-correct="b">
+          <div class="question-num">Въпрос 1 от 10</div>
+          <div class="question-text">Коя е най-ниската суша на Земята и в коя страна/региона се намира?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Долината на Смъртта, САЩ (−86 м)</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Брегът на Мъртво море, Йордания/Израел (−430 м)</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Турфанска депресия, Китай (−154 м)</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Каспийско море (−28 м)</button>
+          </div>
+          <div class="answer-explain" id="explain-0">✅ <strong>Мъртво море</strong> — бреговата линия е на −430 м н.в., най-ниската точка на сушата. Езерото се свива с около 1 м/год. заради пренасочване на водите на р. Йордан. Турфанската депресия е най-ниската точка на Китай и Централна Азия.</div>
+          <button class="quiz-btn" onclick="nextQ(1)" id="next-0" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="c">
+          <div class="question-num">Въпрос 2 от 10</div>
+          <div class="question-text">Кой полюс на студа на Северното полукълбо е регистрирал абсолютно минималната температура −67.7°C?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Верхоянск</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Якутск</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Оймякон</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Норилск</button>
+          </div>
+          <div class="answer-explain" id="explain-1">✅ <strong>Оймякон</strong> е регистрирал −67.7°C (1933), като Верхоянск е регистрирал −67.8°C (официален рекорд за постоянно населено място е спорен между двата). И двата са в Сибирия, Якутия. Причина: котловинна форма на релефа → застояване на студения въздух.</div>
+          <button class="quiz-btn" onclick="nextQ(2)" id="next-1" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="a">
+          <div class="question-num">Въпрос 3 от 10</div>
+          <div class="question-text">Кое е едно от най-дъждовните места на Земята, намиращо се в Индия?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Чeрапунджи (Мосинрам), Мегалая</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Мумбай (Бомбай)</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Колката</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Ченай</button>
+          </div>
+          <div class="answer-explain" id="explain-2">✅ <strong>Черапунджи/Мосинрам</strong> в щата Мегалая (NE Индия) получава ср. 11 430 мм/год. Мосинрам е с рекорд от 26 460 мм за 1985 г. Причина: Хималаите принуждават влажния летен монсун да се издига → кондензация → рекордни валежи.</div>
+          <button class="quiz-btn" onclick="nextQ(3)" id="next-2" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="d">
+          <div class="question-num">Въпрос 4 от 10</div>
+          <div class="question-text">Коя река извира от Тибетското плато, протича през шест страни и се влива в Южнокитайско море?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Ганг</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">А. Брамапутра</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Иравади</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Меконг</button>
+          </div>
+          <div class="answer-explain" id="explain-3">✅ <strong>Меконг</strong> (4500 км) извира от Тибет, протича през Китай, Мианмар, Лаос, Тайланд, Камбоджа, Виетнам. „Дунав на Изтока" — крайбрежните страни спорят за правото на водата и ВЕЦ строежи. Китайските язовири на горното течение са спорен въпрос.</div>
+          <button class="quiz-btn" onclick="nextQ(4)" id="next-3" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="b">
+          <div class="question-num">Въпрос 5 от 10</div>
+          <div class="question-text">Каква е основната причина за Аралската екологична катастрофа?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Климатично изменение и намаляване на валежите</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Пренасочване на реките Амудария и Сирдария за напояване на памучни плантации</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Прекомерен риболов</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Нефтени разливи в езерото</button>
+          </div>
+          <div class="answer-explain" id="explain-4">✅ <strong>Напояването на памук</strong> е основната причина. В съветско време ~60 млн. хa памучни полета са напоявани от Амудария и Сирдария → реките не достигат до езерото → то се свива от 68 000 km² (1960) до <10 000 km² (2020). Поука: необдуманите мелиоративни проекти имат катастрофални последствия.</div>
+          <button class="quiz-btn" onclick="nextQ(5)" id="next-4" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="c">
+          <div class="question-num">Въпрос 6 от 10</div>
+          <div class="question-text">Каква конвенция дава на Турция право да контролира корабоплаването в проливите Босфор и Дарданели?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Виенска конвенция (1961)</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Лозанският договор (1923)</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Монтрьоска конвенция (1936)</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Севърският договор (1920)</button>
+          </div>
+          <div class="answer-explain" id="explain-5">✅ <strong>Монтрьоска конвенция (1936)</strong> — Турция получава суверенитет над проливите и право да регулира преминаването на военни кораби. Гражданските кораби имат свободен проход. Конвенцията е многократно оспорвана, но все още в сила.</div>
+          <button class="quiz-btn" onclick="nextQ(6)" id="next-5" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="a">
+          <div class="question-num">Въпрос 7 от 10</div>
+          <div class="question-text">Кой от следните е „ресурсното проклятие" (Dutch Disease)?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Когато добивът на природни ресурси задушава другите икономически сектори и прави икономиката уязвима</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Когато природните бедствия унищожават природните ресурси</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Когато страната изчерпа природните си ресурси</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Когато чуждестранни компании контролират природните ресурси</button>
+          </div>
+          <div class="answer-explain" id="explain-6">✅ <strong>„Ресурсното проклятие"</strong> (Dutch Disease — от Нидерландия и газовия бум 1960-те): нефтени/газови приходи → укрепване на националната валута → другите сектори (земеделие, производство) стават неконкурентни → монокултурна икономика. Саудитска Арабия, Нигерия, Венецуела са примери.</div>
+          <button class="quiz-btn" onclick="nextQ(7)" id="next-6" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="d">
+          <div class="question-num">Въпрос 8 от 10</div>
+          <div class="question-text">Коя е причината за изключителните земетресения и вулканизъм в Японския архипелаг?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Рифтова зона подобна на Байкал</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Колизия на Индийска и Евразийска плоча</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Хот спот (горещо петно) в мантията</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Субдукция на Тихоокеанска и Филипинска плоча под Евразийска</button>
+          </div>
+          <div class="answer-explain" id="explain-7">✅ <strong>Субдукция</strong> — тежката океанска кора потъва под по-лека континентална. При топенето се отделят летливи вещества (вода, CO₂) → понижение на точката на топене → магма → вулкани. Трение при субдукция → земетресения. Японският архипелаг е над 4 субдукционни зони.</div>
+          <button class="quiz-btn" onclick="nextQ(8)" id="next-7" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="b">
+          <div class="question-num">Въпрос 9 от 10</div>
+          <div class="question-text">Каква е основната разлика в демографската ситуация между Япония и Индия?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Япония расте бавно, Индия — много бавно</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Япония е в 4-та фаза (застаряване, отрицателен прираст), Индия в 3-та (намаляващ, но положителен прираст, демографски дивидент)</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Двете страни са на идентична фаза на демографски преход</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Индия е в 4-та фаза, Япония — в 1-ва</button>
+          </div>
+          <div class="answer-explain" id="explain-8">✅ <strong>Демографският преход</strong>: 1-ва фаза (висока раждаемост и смъртност) → 2-ра (намаляваща смъртност) → 3-та (намаляваща раждаемост, растеж намалява) → 4-та (ниска раждаемост и смъртност, застаряване). Индийският демографски дивидент = голям дял млади работоспособни хора → потенциал за икономически растеж.</div>
+          <button class="quiz-btn" onclick="nextQ(9)" id="next-8" style="display:none">Следващ въпрос →</button>
+        </div>
+
+        <div class="question-block" data-correct="c">
+          <div class="question-num">Въпрос 10 от 10</div>
+          <div class="question-text">Коя планинска система е формирана при колизията на Индийската и Евразийската литосферна плоча и продължава да се издига?</div>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="answerQ(this,'a')">А. Памир</button>
+            <button class="answer-btn" onclick="answerQ(this,'b')">Б. Тяншан</button>
+            <button class="answer-btn" onclick="answerQ(this,'c')">В. Хималаи</button>
+            <button class="answer-btn" onclick="answerQ(this,'d')">Г. Куньлун</button>
+          </div>
+          <div class="answer-explain" id="explain-9">✅ <strong>Хималаите</strong> — формирани при колизия преди ~50 млн. год. и продължават да растат с ~5 мм/год. Еверест (8849 м) е с топографска основа на Тибетско плато. Памир и Тяншан също са свързани с тази колизия, но Хималаите са директният резултат.</div>
+          <button class="quiz-btn" onclick="showResult()" id="next-9" style="display:none">Виж резултата →</button>
+        </div>
+
+      </div><!-- /quiz-body -->
+
+      <div class="quiz-result" id="quiz-result">
+        <div class="result-score" id="resultScore">0/10</div>
+        <div class="result-label">Резултат</div>
+        <div class="result-msg" id="resultMsg"></div>
+        <button class="quiz-btn" onclick="resetQuiz()">Опитай отново</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-title">Азия — Географски Атлас</div>
+  <p>Образователен ресурс за подготовка за час, контролни, зрелостен изпит и олимпиади по география</p>
+  <p style="margin-top:0.5rem;">Клас 10–12 · Профил „География и икономика"</p>
+</footer>
+
+<script>
+// ===== SCROLL PROGRESS =====
+window.addEventListener('scroll', () => {
+  const total = document.body.scrollHeight - window.innerHeight;
+  const progress = (window.scrollY / total) * 100;
+  document.getElementById('navProgress').style.width = progress + '%';
+});
+
+// ===== REVEAL ON SCROLL =====
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+revealEls.forEach(el => revealObs.observe(el));
+
+// ===== TABS =====
+function switchTab(btn, panelId) {
+  const nav = btn.closest('.tab-nav');
+  const tabs = btn.closest('.tabs');
+  nav.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  tabs.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ===== ACCORDION =====
+function toggleAcc(btn) {
+  const content = btn.nextElementSibling;
+  btn.classList.toggle('open');
+  if(btn.classList.contains('open')) {
+    content.style.maxHeight = content.scrollHeight + 'px';
+  } else {
+    content.style.maxHeight = '0';
+  }
+}
+
+// ===== REGION INFO =====
+const regionData = {
+  north: { name: 'Нос Челюскин', info: '77°43′ с.ш. — крайната северна точка на Азия (и Евразия). Намира се на п-ов Таймир, Русия. Открит от Семьон Дежньов (1742).' },
+  south: { name: 'Нос Пиай', info: '1°16′ с.ш. — крайната южна точка на материковата Азия. Намира се в Малайзия, близо до Сингапур.' },
+  west: { name: 'Нос Баба', info: '26°10′ и.д. — крайната западна точка на Азия. В Турция (п-ов Анадол), недалеч от Чанаккале.' },
+  east: { name: 'Нос Дежньов', info: '169°40′ з.д. — крайната източна точка на Азия. В Чукотка, Русия. Само ~86 км отделят Азия от Аляска (нос Принц от Уелс).' }
+};
+
+function showRegionInfo(key) {
+  const box = document.getElementById('region-info');
+  const data = regionData[key];
+  document.querySelectorAll('#extreme-points .region-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  box.innerHTML = `<strong>${data.name}</strong> — ${data.info}`;
+  box.classList.add('show');
+}
+
+// ===== QUIZ =====
+let currentQ = 0;
+let score = 0;
+let answered = new Array(10).fill(false);
+
+function answerQ(btn, chosen) {
+  const qBlock = btn.closest('.question-block');
+  const qIndex = Array.from(document.querySelectorAll('.question-block')).indexOf(qBlock);
+  if(answered[qIndex]) return;
+  answered[qIndex] = true;
+
+  const correct = qBlock.dataset.correct;
+  const options = qBlock.querySelectorAll('.answer-btn');
+  options.forEach(b => b.style.pointerEvents = 'none');
+
+  if(chosen === correct) {
+    btn.classList.add('correct');
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(b => {
+      const bChosen = b.getAttribute('onclick').match(/'([a-d])'\)/)[1];
+      if(bChosen === correct) b.classList.add('correct');
+    });
+  }
+
+  document.getElementById('explain-' + qIndex).classList.add('show');
+  document.getElementById('next-' + qIndex).style.display = 'inline-block';
+
+  // update progress
+  const progressFill = document.getElementById('quizProgressFill');
+  progressFill.style.width = ((qIndex + 1) / 10 * 100) + '%';
+}
+
+function nextQ(nextIndex) {
+  document.querySelectorAll('.question-block').forEach(b => b.classList.remove('active'));
+  const next = document.querySelectorAll('.question-block')[nextIndex];
+  if(next) next.classList.add('active');
+  currentQ = nextIndex;
+}
+
+function showResult() {
+  document.getElementById('quiz-body').style.display = 'none';
+  const resultDiv = document.getElementById('quiz-result');
+  resultDiv.style.display = 'block';
+  document.getElementById('resultScore').textContent = score + '/10';
+  const msgs = [
+    'Продължавай да учиш! Прочети отново разделите и опитай пак.',
+    'Добро начало! Повтори темите, в които объркваш.',
+    'Добре! Имаш солидна база — затвърди детайлите.',
+    'Отлично! Готов си за контролна работа.',
+    'Перфектно! Олимпийско ниво — браво!'
+  ];
+  const idx = Math.floor(score / 2.01);
+  document.getElementById('resultMsg').textContent = msgs[Math.min(idx, 4)];
+}
+
+function resetQuiz() {
+  score = 0;
+  currentQ = 0;
+  answered = new Array(10).fill(false);
+  document.getElementById('quiz-body').style.display = 'block';
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quizProgressFill').style.width = '0%';
+  document.querySelectorAll('.question-block').forEach((b,i) => {
+    b.classList.toggle('active', i === 0);
+    b.querySelectorAll('.answer-btn').forEach(btn => {
+      btn.classList.remove('correct','wrong');
+      btn.style.pointerEvents = '';
+    });
+    const exp = b.querySelector('.answer-explain');
+    if(exp) exp.classList.remove('show');
+    const nxt = b.querySelector('.quiz-btn');
+    if(nxt) nxt.style.display = 'none';
+  });
+}
+</script>
+</body>
+</html>
